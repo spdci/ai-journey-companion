@@ -11,7 +11,7 @@ An interactive guidance and training tool from the **DCI AI Hub for Social Prote
 - **Comparable cases:** each system is matched against the cases in the [AI Hub Tracker](https://socialprotectionai.org/) (snapshot of 13 November 2026).
 - **Documents filled as you go:** Model Card, risk assessment (Tools 1–4), Risk Register, AI Register entry, Sovereignty Schedule, gate decision record, and an institutional readiness report, downloadable as Word, Excel or CSV.
 - **Facilitator pack:** workshop and gate meeting plans, and a presenter mode for the Governance & Readiness Walk.
-- **Worked example:** a fictional multilingual benefits assistant (Modern Standard Arabic, Lebanese Arabic, French, English) in a fictional Lebanese social assistance agency.
+- **Two worked examples, loaded on request:** a fictional multilingual benefits chatbot (Modern Standard Arabic, Lebanese Arabic, French, English) in a social assistance agency in Lebanon, and a fictional job matching assistant for employment counsellors in Morocco. The tool starts empty.
 
 ## Privacy
 
