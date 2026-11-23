@@ -310,6 +310,24 @@ legend{font-weight:700;color:var(--ink)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 
 
+
+/* ===== about this tool ===== */
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:32px}
+.about p{font-size:15px;line-height:1.6;margin:0 0 10px}
+.about-list{margin:4px 0 12px;padding-left:18px;display:grid;gap:6px;font-size:14.5px;line-height:1.5}
+.about-note{font-size:13.5px!important;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.goto{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.gocard{display:flex;flex-direction:column;gap:3px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);text-decoration:none;color:var(--ink)}
+a.gocard:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(30,39,70,.08)}
+.gocard b{font-family:var(--display);font-size:14.5px}
+.gocard span{font-size:13px;color:var(--muted);line-height:1.4}
+.gocard em{font-style:normal;font-weight:700;font-size:13px;color:var(--accent);margin-top:auto;padding-top:4px}
+@media (max-width:980px){.about-grid{grid-template-columns:1fr;gap:20px}}
+@media (max-width:560px){.goto{grid-template-columns:1fr}}
+/* ===== source lines ===== */
+.srcline{margin:0 0 12px;padding:7px 11px;border-left:3px solid var(--sky,#87BEFF);background:#F2F7FF;border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.45;color:#3B4660}
+.srcline b{font-family:var(--display);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-right:6px}
+@media print{.srcline{background:none}}
 /* ===== role view ===== */
 .rolepick{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
 .rolecard{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;font:inherit;color:var(--ink)}
@@ -1275,6 +1293,36 @@ const W = {
 };
 
 /* ===================== RENDER: VIEWS ===================== */
+const SRC={"1": {"0": ["Written for this tool, based on", "the AI Hub Tracker's categories (region, country, income group) so comparable cases can be found; the other fields set up the journey"], "1": ["Written for this tool, based on", "the Taxonomy §1.2 use case categories (each problem maps to one) and the AI Hub Tracker and Global Evidence Review for the closest cases"]}, "2": {"0": ["From", "the AI Governance & Readiness Walk (workshop exercise: 4 dimensions, 24 statements)"], "1": ["From", "AI Hub Clinic 2 · Data Readiness Checklist (draft): 17 questions, scoring on p.7"], "2": ["From", "AI Hub Clinic 1 · AI Readiness Self-Assessment Tool (draft): its six readiness areas and guiding questions"], "3": ["Adapted from", "the Readiness Walk debrief; ‘shared public goods’ from the Governance Playbook (draft)"]}, "3": {"0": ["From", "the Governance Playbook (draft): §5.2 Assigning governance functions and Annex I RACI (nine roles)"], "1": ["Adapted from", "the Governance Playbook (draft): §4.3 Five building blocks, §4.4 Proportionality, §5.2, Annex I (A1–A3, B4/B5); AI Register template v0.1"]}, "4": {"0": ["Adapted from", "the Governance Playbook (draft) §4.3.1 Purpose and value, and the AI Register template v0.1 field guide (Identification, SP context)"], "1": ["From", "the Taxonomy §1 and §2.1 Decision criticality (Tables 7–8), the AI Register template's value lists, and Playbook §6 (pattern for controls)"], "2": ["From", "the AI Hub Tracker (99 cases, snapshot 13 Nov 2026); matching method written for this tool"], "3": ["From", "Tool 1 · Intrinsic Risk Worksheet, Pre-Assessment Screening (p.5)"], "4": ["From", "the Governance Playbook (draft) §5.1 Decision gates: Gate 1 evidence and decisions"]}, "5": {"0": ["From", "Tool 1 · Intrinsic Risk Worksheet, dimensions 1–3 and overall rating (p.6–12)"], "1": ["From", "Tool 2 · Context Risk Multiplier Diagnostic, four factors and aggregation (p.5–16)"], "2": ["From", "the AI Hub Tracker: risks, harms and safeguards recorded for the closest cases"], "3": ["From", "Tool 3 · Risk Register Template and the Risk Assessment Framework Ch. 5 and Annex 2 (rights-based foundation)"]}, "6": {"0": ["From", "the Data Sovereignty report §7.4 Sovereignty/Infrastructure Quadrant (and §3.4 governance levers)"], "1": ["From", "the Procurement Toolkit (draft): five steps, Table 3 clause tiers, watch-outs and ‘before you sign’; vendor questions from the Sovereignty report Annex 2 (Q1–Q10); development route from Taxonomy Table 9"]}, "7": {"0": ["From", "the Governance Playbook (draft) §6.1 Applying the building blocks by type of AI"], "1": ["Adapted from", "the Governance Playbook (draft) §4.3.2 Readiness and control and RACI C1 (data quality, provenance, representativeness)"], "2": ["Adapted from", "the Governance Playbook (draft) §4.3.2 and §6.1, and RACI C2–C4 (oversight, access, explanation)"], "3": ["Adapted from", "the Risk Assessment Framework Ch. 2 (lifecycle stages 2–5), Tool 4 items 13–16, and RACI E1–E3 (testing, validation, acceptance)"], "4": ["From", "the AI Hub example Model Card (Assistive OCR pipeline for ID transcription)"]}, "8": {"0": ["From", "Tool 4 · Go / Pilot / No-Go Checklist: steps 1–3, the 19 safeguards, narrative and sign-off"], "1": ["From", "the Governance Playbook (draft) §5.1 Decision gates and §6.2 Gates by type of AI: Gate 2 evidence and decisions"]}, "9": {"0": ["Adapted from", "the Governance Playbook (draft) Annex I RACI: F2 staff training, F4 informing people, I1–I2 incidents and suspension"], "1": ["Adapted from", "the Risk Assessment Framework Ch. 7 Monitoring and reassessment, the example Model Card (post-deployment monitoring), and RACI G1–G3"], "2": ["From", "the Governance Playbook (draft) §4.3.4 Continuation and change and §6.2 Gate 4 triggers by type of AI"], "3": ["From", "the Governance Playbook (draft) §5.1 Decision gates: Gate 3 evidence and decisions"], "4": ["From", "the Governance Playbook (draft) §5.1 Decision gates: Gate 4 evidence and decisions"], "5": ["Adapted from", "the Governance Playbook (draft) RACI J2 Decommission and the Procurement Toolkit clause A8 Exit and portability"], "6": ["From", "the AI Register template v0.1 (draft): Results and monitoring, and Publication fields"]}};
+function srcLine(stid,i){ const s=(SRC[stid]||{})[i]; return s?`<p class="srcline"><b>Source</b> ${s[0]} ${s[1]}.</p>`:""; }
+
+function aboutTool(){
+  const go=[
+   ["First time here?","Open a worked example to see a finished journey, then choose your role.","#start","Try an example above","ex"],
+   ["Our institution is starting out","Build a shared language, check readiness and set up governance. Done once.","#stage-1","Start at Stage 1",""],
+   ["We have a specific AI idea","A six-question triage sets a light or full path for that system.","#triage","Add an AI system",""],
+   ["We must decide: go, pilot or no-go","Check the 19 minimum safeguards and record the gate decision.","#stage-8","Go to Stage 8",""],
+   ["We need a document","Readiness report, risk assessment, AI Register, model card, contract clauses, gate records.","#documents","See the documents",""],
+   ["We want examples","99 AI cases in social protection from the AI Hub Tracker.","#cases","Browse the cases",""],
+   ["I run workshops","Session plans, gate meetings and who to invite at each stage.","#facilitator","Facilitator pack",""],
+   ["I want the background reading","The AI Hub publications, tools and blogs this companion draws on.","#library","Open the library",""]];
+  return `<section class="panel about">
+  <div class="about-grid">
+   <div>
+    <h2 class="sec-title" style="margin-top:0">What is this tool?</h2>
+    <p>The AI Journey Companion helps <b>social protection institutions</b> (ministries, agencies and funds) decide <b>whether and how to use AI responsibly</b>. It turns the DCI AI Hub's publications and tools into a step-by-step journey.</p>
+    <ul class="about-list">
+     <li><b>Guidance at every stage:</b> what to do, what to be aware of, and when you are ready to move on.</li>
+     <li><b>Worksheets that fill your documents:</b> your answers become a readiness report, risk assessment, AI Register entry, model card and gate records you can download.</li>
+     <li><b>Evidence from others:</b> comparable cases from the AI Hub Tracker for each AI system.</li>
+    </ul>
+    <p class="about-note">It does not approve anything and is not legal advice: decisions stay with your institution. Your answers are kept only in this browser; use <a href="#dossier">Our dossier</a> to save or share them.</p>
+   </div>
+   <div>
+    <h2 class="sec-title" style="margin-top:0">Where do you want to go?</h2>
+    <div class="goto">${go.map(g=>g[4]==="ex"?`<div class="gocard"><b>${g[0]}</b><span>${g[1]}</span><em><button class="lnk" data-loadex="chatbot">AI chatbot example</button> · <button class="lnk" data-loadex="jobs">Job matching example</button> · <a href="#role">Choose your role</a></em></div>`:`<a class="gocard" href="${g[2]}"><b>${g[0]}</b><span>${g[1]}</span><em>${g[3]} →</em></a>`).join("")}</div>
+   </div>
+  </div></section>`; }
 /* ===================== ROLE VIEW ===================== */
 const ROLEPICK=[
  {id:"fac",t:"Facilitator / journey lead",d:"Sees the whole journey, every worksheet and the facilitator pack. Runs the workshops and gate meetings.",codes:[]},
@@ -1335,11 +1383,11 @@ function foldWrap(key,title,meta,html,open){ const o=OPENF[key]!==undefined?OPEN
 function blockFill(b){ if(!b.fields) return null; const f=b.fields.filter(x=>!(x.full&&isLight())); if(!f.length) return null; const a=A(); const n=f.filter(x=>{ const v=a[x.k]; return v!==undefined&&v!==""&&v!==false&&!(Array.isArray(v)&&!v.length); }).length; return [n,f.length]; }
 function worksheet(st){ if(st.id===1) syncS1Cases(); let firstOpen=false; const mineList=[], others=[];
   st.work.forEach((b,i)=>{ const html=b.fields?fieldset(b):W[b.widget](b); if(!html) return;
-    if(b.widget==="gate"){ mineList.push(html); return; }
+    if(b.widget==="gate"){ mineList.push(html.replace(/(<\/legend>)/,"$1"+srcLine(st.id,i))); return; }
     const m=html.match(/<legend[^>]*>([\s\S]*?)<\/legend>/); const title=m?m[1]:"Worksheet"; const body=m?html.replace(m[0],""):html;
     const mine=blockMine(st.id,i); const fc=blockFill(b); const done=fc&&fc[0]===fc[1]; const open=mine!==false&&!firstOpen&&!done; if(open) firstOpen=true;
     const tag=mine===true?`<span class="chip yours">Your part</span>`:mine===false?`<span class="wl">Led by ${esc(blockLeads(st.id,i))}</span>`:"";
-    const f=foldWrap("w"+st.id+"_"+i,`<span class="wn">${i+1}</span>${title}`,tag+(fc?` <span class="chip ${done?"good":fc[0]?"info":"none"}">${fc[0]} of ${fc[1]} filled</span>`:""),body,open);
+    const f=foldWrap("w"+st.id+"_"+i,`<span class="wn">${i+1}</span>${title}`,tag+(fc?` <span class="chip ${done?"good":fc[0]?"info":"none"}">${fc[0]} of ${fc[1]} filled</span>`:""),srcLine(st.id,i)+body,open);
     (mine===false?others:mineList).push(f); });
   if(isFac()||!others.length) return mineList.join("")+others.join("");
   return (mineList.length?mineList.join(""):`<div class="rolebox dim">No worksheet part in this stage is led by your role. Colleagues fill it in; you can still read or add to it below.</div>`)+`<details class="wfold othergrp" data-fold="og${st.id}" ${OPENF["og"+st.id]?"open":""}><summary><span class="wt">Parts led by colleagues</span><span class="wm"><span class="chip none">${others.length}</span></span><span class="chev" aria-hidden="true"></span></summary><div class="wbody">${others.join("")}</div></details>`; }
@@ -1698,7 +1746,7 @@ function renderTriage(id){
   if(!s&&!triDraft) triDraft={risks:[],gates:[]};
   const a=s?s.a:triDraft; const t=triage(a);
   const sel=(k,list,l,hint)=>`<div class="field"><label class="lbl" for="tr_${k}">${esc(l)}</label>${hint?`<span class="hint">${esc(hint)}</span>`:""}<select id="tr_${k}" data-tri="${k}"><option value="">Choose…</option>${list.map(o=>`<option ${o===a[k]?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`;
-  let h=`<section class="panel"><div class="eyebrow">${s?"Triage · "+esc(s.a.sys||"Untitled system"):"Add an AI system"}</div><h1 style="font-size:26px;font-weight:800;margin:6px 0 8px">Triage: how much of the journey does this system need?</h1><p class="why">Six questions, about five minutes. Any high-impact trigger puts the system on the full path. Otherwise it takes the light path: the same stages and gates, with some deeper worksheets hidden and a lower-risk approval route (RACI B5). The questions use Tool 1's high-risk indicators and the AI Register's value lists, and the answers pre-fill Stages 4 and 5.</p></section>
+  let h=`<section class="panel"><div class="eyebrow">${s?"Triage · "+esc(s.a.sys||"Untitled system"):"Add an AI system"}</div><h1 style="font-size:26px;font-weight:800;margin:6px 0 8px">Triage: how much of the journey does this system need?</h1><p class="why">Six questions, about five minutes. Any high-impact trigger puts the system on the full path. Otherwise it takes the light path: the same stages and gates, with some deeper worksheets hidden and a lower-risk approval route (RACI B5). The questions use Tool 1's high-risk indicators and the AI Register's value lists, and the answers pre-fill Stages 4 and 5.</p><p class="srcline"><b>Source</b> Written for this tool, based on Tool 1 · Intrinsic Risk Worksheet (high-risk indicators and scale bands), the AI Register template v0.1 value lists, and the Playbook's two approval paths (RACI B4 high-impact, B5 lower-risk).</p></section>
   <section class="panel"><div class="tri">${s?"":`<div class="field"><label class="lbl" for="tr_sys">Working name of the AI system</label><input type="text" id="tr_sys" data-tri="sys" value="${esc(a.sys)}"></div>`}<div class="trigrid">
   ${sel("entitle",LISTS.entitle,"1 · Effect on people's entitlements","Directly or indirectly, through a human decision")}
   ${sel("sensitivity",LISTS.sensitivity,"2 · Most sensitive data it uses","The highest category in any input or log")}
@@ -1806,6 +1854,7 @@ function renderStart(){
   let h=S.isExample?exampleBanner():"";
   h+=`<section class="panel hero" style="padding:34px 36px">${kvSVG(11,420,320)}<div class="eyebrow">DCI AI Hub · AI Journey Companion</div><h1 class="hero-title">From idea to <em>accountable AI</em></h1><p class="why" style="max-width:60ch">Nine stages that guide a social protection institution from first idea to a monitored AI system. Each stage tells you what to do, what to be aware of, and when you are ready to move on.</p><div class="howsteps"><div><b>Stages 1–3</b><span>Once for the institution</span></div><div><b>Stages 4–9</b><span>For each AI system, after a short triage</span></div><div><b>Gates 1–4</b><span>No system moves on without an accountable decision</span></div></div>
   <div class="btnrow"><button class="btn primary" id="newjourney">${S.isExample||S.systems.length||Object.keys(S.inst).length?"Start a new journey":"Start our journey"}</button><button class="btn" data-loadex="chatbot" title="${esc(EXCHOICES[0].d)}">Example: AI chatbot</button><button class="btn" data-loadex="jobs" title="${esc(EXCHOICES[1].d)}">Example: Job matching</button></div><p style="font-size:13px;color:#BFD9FF;margin:10px 0 0">${S.isExample?`Now showing the <b>${S.exampleId==="jobs"?"job matching":"AI chatbot"}</b> example.`:"The examples are complete fictional journeys with every document filled."} Also: <a href="#documents">Documents</a> · <a href="#facilitator">Facilitator pack</a> · <a href="#systems">Our AI systems (${S.systems.length})</a></p></section>`;
+  h+=aboutTool();
   h+=roleHome();
   h+=`<section class="panel"><h2 class="sec-title">The journey</h2><div class="journeymap">${STAGES.map(st=>`<a class="jcard ${st.id<=3?"inst":""} ${(()=>{const m=myStage(st); return m&&(!m.lvl||m.lvl==="I")?"rdim":"";})()}" href="#stage-${st.id}">${(()=>{const m=myStage(st); return m?`<span class="jrole">${lvlChip(m.lvl)}</span>`:"";})()}<span class="jhead">${icon(st.id)}<span class="num">STAGE ${st.id} · ${st.id<=3?"INSTITUTION":"PER SYSTEM"}<br>${progress(st)}% done</span></span><b>${esc(st.title)}</b><span>${esc(st.question)}</span>${st.gate?`<span class="chip gate gate">◆ ${esc(st.gate.split(" · ")[0])}</span>`:""}</a>`).join("")}</div>
   <details class="wfold" style="margin-top:22px"><summary><span class="wt">How the AI Hub tools fit together</span><span class="chev" aria-hidden="true"></span></summary><div class="wbody"><div class="cols">
