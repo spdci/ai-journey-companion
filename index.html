@@ -565,7 +565,7 @@ const STAGES = [
      {k:"team", l:"Core team (roles)", t:"textarea", h:"e.g. programme manager, MIS lead, DPO, grievance specialist"}
    ]},
    {legend:"Reflection", fields:[
-     {k:"s1_cases", l:"Which cases from the Evidence Review are closest to what we are considering, and what went right or wrong there?", t:"textarea"},
+     {k:"s1_cases", l:"Which cases from the Evidence Review are closest to what we are considering, and what went right or wrong there?", t:"textarea", h:"Drafted automatically from the AI Hub Tracker, using the use case of your AI systems or, before you add one, the problems you list below. It stops updating once you edit it; clear it to draft again."},
      {k:"s1_ideas", l:"Which problems in our delivery chain might AI help with? List them without choosing yet.", t:"textarea"}
    ]}
   ],
@@ -1319,7 +1319,7 @@ function topBar(id){ const ex=S.isExample?`<span class="sb-item sb-ex"><b>Worked
   return `<div class="statusbar">${ex}${sysBar(id)}</div>`; }
 function foldWrap(key,title,meta,html,open){ const o=OPENF[key]!==undefined?OPENF[key]:open; return `<details class="wfold" data-fold="${key}" ${o?"open":""}><summary><span class="wt">${title}</span>${meta?`<span class="wm">${meta}</span>`:""}<span class="chev" aria-hidden="true"></span></summary><div class="wbody">${html}</div></details>`; }
 function blockFill(b){ if(!b.fields) return null; const f=b.fields.filter(x=>!(x.full&&isLight())); if(!f.length) return null; const a=A(); const n=f.filter(x=>{ const v=a[x.k]; return v!==undefined&&v!==""&&v!==false&&!(Array.isArray(v)&&!v.length); }).length; return [n,f.length]; }
-function worksheet(st){ let firstOpen=false; const mineList=[], others=[];
+function worksheet(st){ if(st.id===1) syncS1Cases(); let firstOpen=false; const mineList=[], others=[];
   st.work.forEach((b,i)=>{ const html=b.fields?fieldset(b):W[b.widget](b); if(!html) return;
     if(b.widget==="gate"){ mineList.push(html); return; }
     const m=html.match(/<legend[^>]*>([\s\S]*?)<\/legend>/); const title=m?m[1]:"Worksheet"; const body=m?html.replace(m[0],""):html;
@@ -1377,6 +1377,31 @@ function simScore(a,c){ let s=0,poss=0; const why=[];
   add(a.inst_income,SIM_W.inc,a.inst_income===c.inc,"Same income group");
   return {c, pct: poss?Math.round(s/poss*100):0, why, poss}; }
 function similarCases(n){ const a=A(); if(!a.usecase&&!a.capability) return []; return TRACKER.map(c=>simScore(a,c)).filter(r=>r.pct>=35).sort((x,y)=>y.pct-x.pct||(y.c.ns-x.c.ns)).slice(0,n||8); }
+/* Stage 1 reflection: draft from the use case */
+const S1_STOP=new Set("with that this from their they have will about which what where when into using used more less than also such other some need needs could would should there these those very much many make made like just only over each most data system systems programme programmes social protection people help better them does done".split(" "));
+function s1Tokens(t){ return [...new Set((String(t||"").toLowerCase().match(/[a-z]{4,}/g)||[]).filter(w=>!S1_STOP.has(w)).map(w=>w.length>5?w.slice(0,w.length-2):w))]; }
+function s1Source(){
+  const ucs=S.systems.filter(s=>s.a&&(s.a.usecase||s.a.capability));
+  if(ucs.length){ const seen=new Map();
+    ucs.forEach(s=>withSys(s.id,()=>similarCases(5)).forEach(r=>{ const p=seen.get(r.c.id); if(!p||p.pct<r.pct) seen.set(r.c.id,r); }));
+    const list=[...seen.values()].sort((x,y)=>y.pct-x.pct||y.c.ns-x.c.ns).slice(0,5);
+    return list.length?{basis:"your use case: "+ucs.map(s=>[s.a.usecase,s.a.capability].filter(Boolean).join(", ")+(s.a.sys?` (${s.a.sys})`:"")).join("; "),list}:null; }
+  const tk=s1Tokens([S.inst.s1_ideas,S.inst.inst_progs].filter(Boolean).join(" ")); if(!tk.length) return null;
+  const need=Math.min(3,tk.length*2);
+  const list=TRACKER.map(c=>{ const key=[c.n,c.prog,c.uc,(c.uc2||[]).join(" "),c.fn,c.cap,(c.cap2||[]).join(" "),c.pil].join(" ").toLowerCase(), more=String(c.d||"").toLowerCase(); return {c,hits:tk.reduce((s,w)=>s+(key.includes(w)?2:more.includes(w)?1:0),0)}; })
+    .filter(r=>r.hits>=need).sort((x,y)=>y.hits-x.hits||y.c.ns-x.c.ns).slice(0,5);
+  return list.length?{basis:"the problems you listed",list}:null; }
+function s1First(t){ t=String(t||"").trim(); const cut=/…$/.test(t); t=t.replace(/…$/,"").trim(); if(!t) return ""; const m=t.match(/^.{20,220}?[.;](\s|$)/); return m?m[0].trim():(t.length>200?t.slice(0,200)+"…":t+(cut?"…":"")); }
+function s1Draft(){ const src=s1Source(); if(!src) return ""; const L=src.list;
+  const top=(key,n)=>{ const m={}; L.forEach(r=>(r.c[key]||[]).forEach(v=>m[v]=(m[v]||0)+1)); return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,n).map(x=>x[0]); };
+  const live=L.filter(r=>/Production|Operational|Scaled/.test(r.c.st)).length, halted=L.filter(r=>/Suspended|Halted/.test(r.c.st));
+  let t=`Closest cases in the AI Hub Tracker, based on ${src.basis}:\n`+L.map(r=>{ const o=s1First(r.c.out), ch=s1First(r.c.ch); return `- ${r.c.n} (${r.c.id}, ${r.c.c}, ${r.c.st})`+(o?`\n  Outcome: ${o}`:"")+(ch?`\n  Challenge: ${ch}`:""); }).join("\n");
+  const sg=top("sg",3), rd=top("rd",4), hm=top("id2",3);
+  t+=`\n\nWhat went right: ${live} of ${L.length} are in operational use.`+(sg.length?` Safeguards they relied on: ${sg.join(", ")}.`:"");
+  t+=`\nWhat went wrong or could: `+(halted.length?`${halted.map(r=>r.c.n).join(", ")} ${halted.length>1?"were":"was"} suspended or halted. `:"")+(rd.length?`Recurring risks: ${rd.join(", ")}.`:"")+(hm.length?` Harms recorded: ${hm.join("; ")}.`:"");
+  return t+`\n\n(Drafted from the AI Hub Tracker. Add what your team takes from these cases.)`; }
+function syncS1Cases(){ const cur=S.inst.s1_cases||"", auto=S.inst.s1_cases_auto||""; if(cur&&cur!==auto) return false;
+  const d=s1Draft(); if(d===cur) return false; if(d){ S.inst.s1_cases=d; S.inst.s1_cases_auto=d; } else { delete S.inst.s1_cases; delete S.inst.s1_cases_auto; } save(); return true; }
 function countTop(list,key,n){ const m={}; list.forEach(r=>(r.c[key]||[]).forEach(v=>m[v]=(m[v]||0)+1)); return Object.entries(m).sort((x,y)=>y[1]-x[1]).slice(0,n); }
 const SG_MAP={"DPIA/AIA conducted":a=>a.t4_4==="Yes","Human oversight protocol":a=>a.ov_authority&&a.ov_record,"Grievance mechanism":a=>a.t4_11==="Yes"||!!a.challenge,"Bias audit":a=>!!a.t_groups,"Independent evaluation":a=>!!a.t_indep,"Data minimisation controls":a=>a.vq_2==="Yes","Exit/rollback plan":a=>!!a.exit||a.t4_17==="Yes"};
 function stChip(st){ return `<span class="chip ${/Suspended|Retired/.test(st)?"bad":/Pilot|Design|Concept/.test(st)?"warn":"good"}">${esc(st)}</span>`; }
@@ -1882,7 +1907,7 @@ document.addEventListener("input",e=>{ const el=e.target;
   if(el.dataset.r!==undefined){ A().risks[+el.dataset.r][el.dataset.f]=el.value; save(); if(el.tagName==="SELECT") rerenderKeepFocus(); return; }
   const k=el.dataset.k; if(!k) return;
   if(el.type==="checkbox") A()[k]=el.checked; else A()[k]=el.value;
-  save(); if(!(LIVE.has(el.type)||el.tagName==="TEXTAREA")) rerenderKeepFocus(); else renderRail(+((location.hash.match(/stage-(\d)/)||[])[1]||0));
+  save(); if(k==="s1_ideas"||k==="inst_progs"){ if(syncS1Cases()){ const ta=document.getElementById("f_s1_cases"); if(ta) ta.value=S.inst.s1_cases||""; } } if(!(LIVE.has(el.type)||el.tagName==="TEXTAREA")) rerenderKeepFocus(); else renderRail(+((location.hash.match(/stage-(\d)/)||[])[1]||0));
 });
 document.addEventListener("input",e=>{ const el=e.target;
   if(el.dataset.tri){ const id=(location.hash.match(/^#triage-([a-z0-9]+)$/)||[])[1]; const s=id?S.systems.find(x=>x.id===id):null; const a=s?s.a:triDraft; const k=el.dataset.tri; a[k]= el.type==="checkbox"?(k==="path_choice"?(el.checked?"full":""):el.checked):el.value; if(s) save(); if(el.type!=="text"){ const y=window.scrollY; renderTriage(id||null); renderRail(0); window.scrollTo(0,y); } else { const b=$("#createsys"); const t=triage(a); if(b) b.disabled=!(t.done&&a.sys); } return; }
