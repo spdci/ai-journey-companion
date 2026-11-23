@@ -281,6 +281,35 @@ footer p{margin:0;opacity:.8;max-width:760px}
   .quad{grid-template-columns:70px 1fr 1fr}
   .gatebox{grid-template-columns:1fr}
 }
+
+
+/* simpler journey: folded sections and a "More" menu */
+details.fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;justify-content:space-between}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary h2{margin:0}
+.chev{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);position:relative}
+.chev:after{content:"";position:absolute;left:12px;top:10px;width:8px;height:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg);transition:transform .15s}
+details.fold[open]>summary .chev:after{transform:rotate(-135deg);top:14px}
+details.fold>summary:hover .chev{border-color:var(--orange)}
+.sec.fold{border-top:1px solid var(--line);padding:22px 0 10px}
+.sec.fold[open]{padding-bottom:8px}
+.sec.fold>summary{padding:2px 0}
+.sec.fold>*:not(summary){margin-top:14px}
+.homefold{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:18px 22px}
+.homefold>summary h2{font-size:21px}
+.homefold[open]>summary{margin-bottom:12px}
+.foldwrap{padding-top:0!important;padding-bottom:16px!important}
+.navmore{position:relative}
+.navmore>summary{list-style:none;color:#fff;font-family:var(--head);font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;opacity:.85;cursor:pointer}
+.navmore>summary::-webkit-details-marker{display:none}
+.navmore>summary:after{content:" ▾";font-size:11px}
+.navmore>summary:hover{opacity:1;background:rgba(255,255,255,.08)}
+.navmore>summary.on{background:var(--sky);color:var(--navy);opacity:1}
+.navpop{position:absolute;right:0;top:calc(100% + 8px);background:var(--navy);border-radius:12px;padding:8px;min-width:170px;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(10,16,34,.35)}
+.navpop a{display:block}
+@media (max-width:980px){ .navmore>summary{display:none} .navmore .navpop{position:static;display:flex!important;box-shadow:none;padding:0;min-width:0;background:none} }
+@media print{ details.fold>summary .chev{display:none} }
+
 @media print{header.top,.secnav,.pager,footer{display:none}.sec{padding-top:16px}.pane{display:block!important}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
@@ -386,9 +415,11 @@ nav.main a{white-space:nowrap}
       <a href="#essentials" data-nav="essentials">Essentials</a>
       <a href="#workshops" data-nav="workshops">Workshops</a>
       <a href="#cases" data-nav="cases">Cases</a>
+      <details class="navmore" id="navmore"><summary data-nav="more">More</summary><div class="navpop">
       <a href="#library" data-nav="library">Library</a>
       <a href="#roles" data-nav="roles">Roles</a>
       <a href="#glossary" data-nav="glossary">Key terms</a>
+      </div></details>
     </nav>
   </div>
 </header>
@@ -636,24 +667,24 @@ function viewHome(){
    <p class="lead">Seven stages, from first conversations to monitoring a live system. For each stage: why it matters, what to read in the AI Hub publications, what to do, and who should be involved. Short on time? Start with <a href="#essentials" style="color:inherit;text-decoration:underline">the essentials</a>: one thing to read and one thing to do per stage.</p>
    <div class="howto"><div><b>Follow the route</b>Stages 1–2 prepare the institution once. Stages 3–7 repeat for every AI system.</div><div><b>Read, then act</b>Each stage points to the exact sections worth reading and the steps that follow from them.</div><div><b>Stop at the gates</b>Four decision gates make sure no system moves forward without evidence and an accountable decision.</div></div></div></section>
   <div class="wrap">${journeyMap()}</div>
-  <section class="block"><div class="wrap"><h2>Four ways to use this guide</h2><div class="grid4">
+  <section class="block"><div class="wrap"><h2>Where are you on the journey?</h2><p class="sub">Every institution starts somewhere different. Pick the description closest to yours.</p>
+   <div class="grid4">${ENTRY.map(e=>`<a class="card entry" href="#stage-${e.s}"><span class="num">STAGE ${e.s}</span><h3 style="margin-top:6px">${esc(e.t)}</h3><p>${esc(e.d)}</p><span class="go">Go to Stage ${e.s} →</span></a>`).join("")}</div>
+   <p class="sub" style="margin-top:18px">If your institution has not yet worked through Stages 1–2, return to them before taking a system through Gate 1.</p></div></section>
+  <section class="block" style="padding-top:0"><div class="wrap"><h2>Four ways to use this guide</h2><div class="grid4">
    <a class="card entry" href="#essentials"><span class="num">READ</span><h3 style="margin-top:6px">The essentials</h3><p>One thing to read and one thing to do per stage.</p><span class="go">Open →</span></a>
    <a class="card entry" href="#workshops"><span class="num">RUN</span><h3 style="margin-top:6px">Workshops</h3><p>${SESSIONS.length} ready-made sessions with agendas, invite lists and questions to ask.</p><span class="go">Open →</span></a>
    <a class="card entry" href="#cases"><span class="num">LEARN</span><h3 style="margin-top:6px">${TRACKER.length} real cases</h3><p>What others built, how far they got, and what went wrong.</p><span class="go">Open →</span></a>
    <a class="card entry" href="#stage-1"><span class="num">GO DEEPER</span><h3 style="margin-top:6px">The seven stages</h3><p>Why each stage matters, what to read, what to do and who is involved.</p><span class="go">Start at Stage 1 →</span></a>
   </div></div></section>
-  <section class="block"><div class="wrap"><h2>Where are you on the journey?</h2><p class="sub">Every institution starts somewhere different. Pick the description closest to yours.</p>
-   <div class="grid4">${ENTRY.map(e=>`<a class="card entry" href="#stage-${e.s}"><span class="num">STAGE ${e.s}</span><h3 style="margin-top:6px">${esc(e.t)}</h3><p>${esc(e.d)}</p><span class="go">Go to Stage ${e.s} →</span></a>`).join("")}</div>
-   <p class="sub" style="margin-top:18px">If your institution has not yet worked through Stages 1–2, return to them before taking a system through Gate 1.</p></div></section>
-  <section class="block" style="padding-top:0"><div class="wrap"><h2>How the decisions fit together</h2><p class="sub">Four gates, each with its own decision. The AI Hub tools feed the gates; they do not replace them.</p>${gateTable()}</div></section>
-  <section class="block" style="padding-top:0"><div class="wrap"><h2>The AI Hub library in four questions</h2><p class="sub">The four core publications form one path: a shared language, the evidence, responsible application, and sovereignty.</p>
+  <section class="block foldwrap"><div class="wrap">${foldBlock("How the decisions fit together",`<p class="sub">Four gates, each with its own decision. The AI Hub tools feed the gates; they do not replace them.</p>${gateTable()}`)}</div></section>
+  <section class="block foldwrap"><div class="wrap">${foldBlock("The AI Hub library in four questions",`<p class="sub">The four core publications form one path: a shared language, the evidence, responsible application, and sovereignty.</p>
    <div class="grid4">${pubs.map((p,i)=>`<a class="card pubcard" href="${esc(RES[p[0]].url)}" target="_blank" rel="noopener"><span class="num">0${i+1}</span><div class="q">${p[1]}</div><div class="t">${esc(RES[p[0]].t)}</div></a>`).join("")}</div>
-   <p style="margin-top:20px"><a class="go" href="#library">See the full library →</a></p></div></section>
-  <section class="block" style="padding-top:0"><div class="wrap"><h2>All stages at a glance</h2><p class="sub">The guiding question for each stage.</p>
-   <div class="grid3">${STAGES.map(s=>`<a class="card" href="#stage-${s.id}"><span class="num">STAGE ${s.id}${s.gate?" · "+esc(s.gate.split(" · ")[0]).toUpperCase():""}</span><h3 style="font-size:17px;margin:6px 0">${esc(s.title)}</h3><p style="margin:0;color:var(--muted);font-size:15px">${esc(s.question)}</p></a>`).join("")}</div></div></section>`;
+   <p style="margin-top:20px"><a class="go" href="#library">See the full library →</a></p>`)}</div></section>
+  <section class="block foldwrap"><div class="wrap">${foldBlock("All stages at a glance",`<p class="sub">The guiding question for each stage.</p>
+   <div class="grid3">${STAGES.map(s=>`<a class="card" href="#stage-${s.id}"><span class="num">STAGE ${s.id}${s.gate?" · "+esc(s.gate.split(" · ")[0]).toUpperCase():""}</span><h3 style="font-size:17px;margin:6px 0">${esc(s.title)}</h3><p style="margin:0;color:var(--muted);font-size:15px">${esc(s.question)}</p></a>`).join("")}</div>`)}</div></section>`;
 }
 
-const SECS=[["ess","In short"],["why","Why it matters"],["read","What to read"],["do","What to do"],["learn","Understand"],["who","Who is involved"],["ready","Ready to move on"]];
+const SECS=[["ess","In short"],["why","Why it matters"],["read","What to read"],["do","What to do"],["ready","Ready to move on"],["learn","Understand"],["who","Who is involved"]];
 function viewStage(id){
   const s=STAGES[id-1], x=X[id]; if(!s) return viewHome();
   const isInst=x.phase==="inst";
@@ -674,10 +705,9 @@ function viewStage(id){
    <div class="sec" id="s-why"><h2>${ic("why")}Why this stage matters</h2><p class="why">${esc(s.why)}</p></div>
    <div class="sec" id="s-read"><h2>${ic("read")}What to read</h2><p class="sub">The sections of the AI Hub products that matter most here, and the main takeaway from each.</p><div class="grid2">${s.readings.map(readingCard).join("")}</div></div>
    <div class="sec" id="s-do"><h2>${ic("do")}What to do</h2><p class="sub">The steps for this stage, in the order they usually happen.</p><ol class="steps">${x.steps.map(t=>`<li><div><b>${esc(t[0])}</b><span>${esc(t[1])}</span></div></li>`).join("")}</ol>${gates}${wsLink(id)}</div>
-   <div class="sec" id="s-learn"><h2>${ic("learn")}Understand the key ideas</h2><p class="sub">Concepts to keep in mind, and interactive explainers built from the AI Hub tools.</p><div class="grid${s.concepts.length===4?"4":"3"}">${s.concepts.map(c=>`<div class="concept"><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join("")}</div>${x.explainer.map(k=>EXPL[k]()).join("")}${x.cases?simWidget(x.cases):""}</div>
-   <div class="sec" id="s-who"><h2>${ic("who")}Who is involved</h2><p class="sub">${s.raci.length?"Activities from the Playbook's RACI matrix (Annex I) that belong to this stage.":""}</p>${who}</div>
    <div class="sec" id="s-ready"><h2>${ic("ready")}You are ready to move on when you have…</h2><div class="ready">${s.outputs.map(o=>`<div>${tick}<span>${esc(o)}</span></div>`).join("")}</div></div>
-
+   ${fold(`<div class="sec" id="s-learn"><h2>${ic("learn")}Understand the key ideas</h2><p class="sub">Concepts to keep in mind, and interactive explainers built from the AI Hub tools.</p><div class="grid${s.concepts.length===4?"4":"3"}">${s.concepts.map(c=>`<div class="concept"><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join("")}</div>${x.explainer.map(k=>EXPL[k]()).join("")}${x.cases?simWidget(x.cases):""}</div>`)}
+   ${fold(`<div class="sec" id="s-who"><h2>${ic("who")}Who is involved</h2><p class="sub">${s.raci.length?"Activities from the Playbook's RACI matrix (Annex I) that belong to this stage.":""}</p>${who}</div>`)}
    <div class="pager">${prev?`<a href="#stage-${prev.id}"><small>← Stage ${prev.id}</small><b>${esc(prev.title)}</b></a>`:""}${next?`<a class="nx" href="#stage-${next.id}"><small>Stage ${next.id} →</small><b>${esc(next.title)}</b></a>`:`<a class="nx" href="#library"><small>Next →</small><b>Browse the full library</b></a>`}</div>
   </div>`;
 }
@@ -822,6 +852,9 @@ function viewWorkshops(){
 function wsLink(id){ const s=SESSIONS.filter(x=>x.stage===id); if(!s.length) return "";
   return `<div class="wslink">${s.map(x=>`<a href="#workshops" data-ws="${x.id}"><span class="wid">${x.id}</span><span><b>Run this stage as a workshop:</b> ${esc(x.title)} <small>(${esc(x.dur)})</small></span></a>`).join("")}</div>`; }
 
+/* Fold a ".sec" block into a collapsible section: same heading and content, shown on demand */
+function fold(html){ if(!html) return ""; return html.replace(/^\s*<div class="sec" id="(s-[a-z]+)"><h2>([\s\S]*?)<\/h2>/,(m,id,t)=>`<details class="sec fold" id="${id}"><summary><h2>${t}</h2><span class="chev" aria-hidden="true"></span></summary>`).replace(/<\/div>\s*$/,"</details>"); }
+function foldBlock(title,inner){ return `<details class="fold homefold"><summary><h2>${title}</h2><span class="chev" aria-hidden="true"></span></summary>${inner}</details>`; }
 
 /* Essentials box, gate table, essentials page */
 function essBox(id){ const e=ESS[id]; const r=RES[e.read[0]];
@@ -869,13 +902,14 @@ function render(){
   else if(h==="glossary"){ app.innerHTML=viewGlossary(); nav="glossary"; }
   else app.innerHTML=viewHome();
   document.querySelectorAll("nav.main a").forEach(a=>a.classList.toggle("on",a.dataset.nav===nav));
+  const nm=$("#navmore"); if(nm){ nm.open=false; nm.querySelector("summary").classList.toggle("on",["library","roles","glossary"].includes(nav)); }
   $("#mainnav").classList.remove("open");
   bindExplainers(app); bindPage(); window.scrollTo(0,0);
   if(h==="workshops"&&window._ws){ const d=document.getElementById("ws-"+window._ws); window._ws=null; if(d){ d.open=true; setTimeout(()=>d.scrollIntoView({block:"start"}),50); } }
 }
 function bindPage(){
   const sn=document.querySelector(".secnav");
-  if(sn){ sn.addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(!b) return; document.getElementById("s-"+b.dataset.go).scrollIntoView({behavior:"smooth"}); });
+  if(sn){ sn.addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(!b) return; const t=document.getElementById("s-"+b.dataset.go); if(t.tagName==="DETAILS") t.open=true; t.scrollIntoView({behavior:"smooth"}); });
     const secs=[...document.querySelectorAll(".sec")]; const btns=[...sn.querySelectorAll("button")];
     const io=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting){ const id=en.target.id.slice(2); btns.forEach(b=>b.classList.toggle("on",b.dataset.go===id)); } }); },{rootMargin:"-140px 0px -60% 0px"});
     secs.forEach(s=>io.observe(s)); }
