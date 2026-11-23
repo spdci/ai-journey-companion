@@ -531,6 +531,19 @@ const PURCHASE = {
  "AI feature switched on in an existing MIS or payments contract":{start:"A contract variation before the feature goes live", ex:"Worked example: fraud-flag feature in an MIS → A3, A5, A9, A8, A10, A11, A12; A1 on existing hosting; A6 and A7 if anything is trained for you."}
 };
 
+/* Stage 1 problem list: each problem maps to a Taxonomy use case category */
+const S1_PROBS=[
+ ["We struggle to identify who is poor, vulnerable or at risk","Vulnerability, needs and risk assessment"],
+ ["Shocks such as droughts, floods or price spikes hit before we can respond","Trend and shock forecasting"],
+ ["Duplicate, unverified or unlinked records and identities","Identification, verification and record linkage"],
+ ["Eligibility and benefit decisions are slow or inconsistent","Decision support for eligibility and benefits"],
+ ["Our data has errors, gaps or anomalies we cannot find","Data quality and anomaly detection"],
+ ["Too many enquiries: long queues, overloaded hotlines, unanswered questions","User communication and interaction"],
+ ["People are not matched to the right jobs, services or programmes","Matching and recommendation"],
+ ["Manual paperwork: documents, forms and grievances handled by hand","Operational and process automation"],
+ ["Fraud, error and overpayments","Compliance and integrity"],
+ ["Little evidence on what works; weak monitoring and evaluation","Policy analysis, learning and M&E"]];
+
 /* ===================== STAGES ===================== */
 const STAGES = [
 { id:1, short:"Foundations", title:"Build a shared language", question:"What is AI, what can it do in social protection, and what has already been tried?",
@@ -565,8 +578,8 @@ const STAGES = [
      {k:"team", l:"Core team (roles)", t:"textarea", h:"e.g. programme manager, MIS lead, DPO, grievance specialist"}
    ]},
    {legend:"Reflection", fields:[
-     {k:"s1_ideas", l:"Which problems in our delivery chain might AI help with? List them without choosing yet.", t:"textarea", h:"e.g. grievances are sorted by hand; long call-centre queues; duplicate records across registries"},
-     {k:"s1_cases", l:"Which cases from the Evidence Review are closest to these problems, and what went right or wrong there?", t:"textarea", h:"Drafted from the AI Hub Tracker once you list problems above (or add an AI system with a use case). It stops updating once you edit it; clear it to draft again.", ph:"List at least one problem above and the closest cases will appear here."}
+     {k:"s1_probs", l:"Which problems in our delivery chain might AI help with? Tick all that apply, without choosing a solution yet.", t:"multi", o:S1_PROBS.map(p=>p[0])},
+     {k:"s1_cases", l:"Which cases from the Evidence Review are closest to these problems, and what went right or wrong there?", t:"textarea", h:"Drafted from the AI Hub Tracker from the problems you tick above (or, if none, from an AI system's use case). It stops updating once you edit it; clear it to draft again.", ph:"Tick at least one problem above and the closest cases will appear here."}
    ]}
   ],
   outputs:["Shared vocabulary across programme, IT and legal teams","A long list of candidate problems (not solutions)"], raci:[] },
@@ -937,7 +950,7 @@ const EXAMPLE = {
  isExample:true, a:{
  inst:"Social assistance agency, Lebanon (fictional example)", inst_progs:"Emergency social safety net cash transfer (fictional example)", lead:"Director of Beneficiary Services", team:"Beneficiary Services lead; Head of IT and MIS; legal adviser and data protection focal point; hotline supervisor; social worker coordinator; local integrator (vendor)",
  s1_cases:"Closest tracker cases: PM-KISAN Kisan e-Mitra (IND-001), Smart Sathi 333 helpline (BGD-003), Bürokratt (EST-001), Azerbaijan Social Bot (AZE-001) and ILO SkillLab Lebanon (LBN-001). Recurring lessons: hallucinated answers, weaker performance in local dialects, and the digital divide for older and low-literacy users.",
- s1_ideas:"Hotline overload after each payment cycle; repeated questions about eligibility and payment dates; slow grievance triage; duplicate household records.",
+ s1_probs:[S1_PROBS[5][0],S1_PROBS[7][0],S1_PROBS[2][0]],
  dr_0_0:"Yes",dr_0_1:"Yes",dr_0_2:"Partly",dr_1_0:"Partly",dr_1_1:"Partly",dr_1_2:"Partly",dr_1_3:"Yes",dr_1_4:"Yes",dr_1_5:"Partly",dr_2_0:"Yes",dr_2_1:"Partly",dr_2_2:"Partly",dr_2_3:"Partly",dr_2_4:"Partly",dr_3_0:"Yes",dr_3_1:"Partly",dr_3_2:"Partly",
  wk_0_f_0:true,wk_0_f_2:true,wk_0_b_1:true,wk_1_f_1:true,wk_1_f_2:true,wk_1_b_1:true,wk_2_f_0:true,wk_2_f_1:true,wk_2_b_1:true,wk_3_f_1:true,wk_3_b_2:true,
  w_back:"Funding, regulatory uncertainty and low public trust after the crisis years.", w_forward:"A named owner for programme content in all four languages.", w_shared:"A shared Lebanese Arabic and Arabizi test set that other agencies could reuse.",
@@ -994,7 +1007,7 @@ const EXAMPLE_JOBS = {
  inst:{ inst:"National employment agency, Morocco (fictional example)", inst_progs:"Job search assistance and placement; youth employment programme (fictional examples)", inst_region:"Middle East, North Africa, Afghanistan & Pakistan", inst_income:"Lower middle income",
   lead:"Director of Employment Services", team:"Employment services lead; head of information systems; data protection focal point; two counsellor representatives; labour market analyst; university data science partner",
   s1_cases:"Closest tracker cases: MyCareersFuture (SGP-001), The Work (KOR-002), Hello Work (JPN-001), Estonia's OTT decision support (EST-003), and ILO SkillLab pilots in Lebanon (LBN-001) and Egypt (EGY-001). Lessons: matching can repeat gender and age gaps from past placements; counsellors only use tools they understand; people with thin digital profiles get worse matches.",
-  s1_ideas:"Counsellors search vacancies by hand; vacancy texts are unstructured in Arabic and French; many jobseekers drop out after registration; little follow-up data on placements.",
+  s1_probs:[S1_PROBS[6][0],S1_PROBS[4][0],S1_PROBS[9][0]],
   dr_0_0:"Yes",dr_0_1:"Partly",dr_0_2:"Partly",dr_1_0:"Partly",dr_1_1:"Partly",dr_1_2:"Partly",dr_1_3:"Partly",dr_1_4:"Yes",dr_1_5:"Partly",dr_2_0:"Yes",dr_2_1:"Partly",dr_2_2:"Yes",dr_2_3:"Partly",dr_2_4:"Partly",dr_3_0:"Yes",dr_3_1:"Yes",dr_3_2:"Partly",
   wk_0_f_0:true,wk_0_f_2:true,wk_0_b_1:true,wk_1_f_0:true,wk_1_f_1:true,wk_1_b_2:true,wk_2_f_0:true,wk_2_f_2:true,wk_2_b_0:true,wk_3_f_1:true,wk_3_b_1:true,
   walkroom:{size:"16",c:{"0_f_0":"11","0_f_1":"5","0_f_2":"9","0_b_0":"6","0_b_1":"12","0_b_2":"7","1_f_0":"8","1_f_1":"10","1_f_2":"6","1_b_0":"4","1_b_1":"7","1_b_2":"9","2_f_0":"12","2_f_1":"9","2_f_2":"7","2_b_0":"10","2_b_1":"8","2_b_2":"5","3_f_0":"6","3_f_1":"11","3_f_2":"5","3_b_0":"9","3_b_1":"10","3_b_2":"6"}},
@@ -1154,6 +1167,7 @@ function fieldHTML(f){
   else if(f.t==="textarea") inp=`<textarea id="${id}" data-k="${f.k}"${f.ph?` placeholder="${esc(f.ph)}"`:""}>${esc(v)}</textarea>`;
   else if(f.t==="select") inp=`<select id="${id}" data-k="${f.k}"><option value="">Choose…</option>${opts(f).map(o=>`<option ${o===v?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
   else if(f.t==="radio") inp=`<div class="seg" role="radiogroup" aria-labelledby="${id}_l">${opts(f).map((o,i)=>`<label><input type="radio" name="${id}" id="${id}_${i}" data-k="${f.k}" value="${esc(o)}" ${o===v?"checked":""}>${esc(o)}</label>`).join("")}</div>`;
+  else if(f.t==="multi"){ const sel=Array.isArray(v)?v:[]; inp=`<div class="multi" role="group" aria-labelledby="${id}_l">${opts(f).map((o,i)=>`<label class="checkrow" for="${id}_${i}"><input type="checkbox" id="${id}_${i}" data-mk="${f.k}" value="${esc(o)}" ${sel.includes(o)?"checked":""}><span>${esc(o)}</span></label>`).join("")}</div>`; }
   else if(f.t==="check") return `<label class="checkrow" for="${id}"><input type="checkbox" id="${id}" data-k="${f.k}" ${v?"checked":""}><span>${esc(f.l)}</span></label>`;
   return `<div class="field"><label class="lbl" id="${id}_l" for="${id}">${esc(f.l)}</label>${f.h?`<span class="hint">${esc(f.h)}</span>`:""}${inp}</div>`;
 }
@@ -1377,20 +1391,20 @@ function simScore(a,c){ let s=0,poss=0; const why=[];
   add(a.inst_income,SIM_W.inc,a.inst_income===c.inc,"Same income group");
   return {c, pct: poss?Math.round(s/poss*100):0, why, poss}; }
 function similarCases(n){ const a=A(); if(!a.usecase&&!a.capability) return []; return TRACKER.map(c=>simScore(a,c)).filter(r=>r.pct>=35).sort((x,y)=>y.pct-x.pct||(y.c.ns-x.c.ns)).slice(0,n||8); }
-/* Stage 1 reflection: draft from the use case */
-const S1_STOP=new Set("with that this from their they have will about which what where when into using used more less than also such other some need needs could would should there these those very much many make made like just only over each most data system systems programme programmes social protection people help better them does done want hand late long slow fast same lots often take takes time times high many".split(" "));
-function s1Tokens(t){ return [...new Set((String(t||"").toLowerCase().match(/[a-z]{4,}/g)||[]).filter(w=>!S1_STOP.has(w)).map(w=>w.length>5?w.slice(0,w.length-2):w))]; }
+/* Stage 1 reflection: draft from the problems ticked (or an AI system's use case) */
 function s1Source(){
+  const picked=(Array.isArray(S.inst.s1_probs)?S.inst.s1_probs:[]).map(t=>S1_PROBS.find(p=>p[0]===t)).filter(Boolean);
+  if(picked.length){
+    const per=picked.map(p=>TRACKER.map(c=>({c,sc:c.uc===p[1]?2:(c.uc2||[]).includes(p[1])?1:0})).filter(r=>r.sc).sort((x,y)=>y.sc-x.sc||y.c.ns-x.c.ns));
+    const list=[], seen=new Set(), max=Math.max(5,Math.min(8,picked.length*2));
+    for(let k=0; list.length<max && per.some(l=>l.length>k); k++) per.forEach(l=>{ const r=l[k]; if(r&&!seen.has(r.c.id)&&list.length<max){ seen.add(r.c.id); list.push(r); } });
+    return list.length?{basis:"the problems you ticked ("+picked.map(p=>p[1]).join("; ")+")",list}:null; }
   const ucs=S.systems.filter(s=>s.a&&(s.a.usecase||s.a.capability));
   if(ucs.length){ const seen=new Map();
     ucs.forEach(s=>withSys(s.id,()=>similarCases(5)).forEach(r=>{ const p=seen.get(r.c.id); if(!p||p.pct<r.pct) seen.set(r.c.id,r); }));
     const list=[...seen.values()].sort((x,y)=>y.pct-x.pct||y.c.ns-x.c.ns).slice(0,5);
     return list.length?{basis:"your use case: "+ucs.map(s=>[s.a.usecase,s.a.capability].filter(Boolean).join(", ")+(s.a.sys?` (${s.a.sys})`:"")).join("; "),list}:null; }
-  const tk=s1Tokens(S.inst.s1_ideas); if(!tk.length) return null;
-  const need=2; const rx=tk.map(w=>new RegExp("\\b"+w));
-  const list=TRACKER.map(c=>{ const nm=[c.n,c.prog].join(" ").toLowerCase(), key=[c.uc,(c.uc2||[]).join(" "),c.fn,c.cap,(c.cap2||[]).join(" "),c.pil].join(" ").toLowerCase(), more=String(c.d||"").toLowerCase(); return {c,hits:rx.reduce((s,r)=>s+(r.test(nm)?4:r.test(key)?3:r.test(more)?1:0),0)}; })
-    .filter(r=>r.hits>=need).sort((x,y)=>y.hits-x.hits||y.c.ns-x.c.ns).slice(0,5);
-  return list.length?{basis:"the problems you listed",list}:null; }
+  return null; }
 function s1First(t){ t=String(t||"").trim(); const cut=/…$/.test(t); t=t.replace(/…$/,"").trim(); if(!t) return ""; const m=t.match(/^.{20,220}?[.;](\s|$)/); return m?m[0].trim():(t.length>200?t.slice(0,200)+"…":t+(cut?"…":"")); }
 function s1Draft(){ const src=s1Source(); if(!src) return ""; const L=src.list;
   const top=(key,n)=>{ const m={}; L.forEach(r=>(r.c[key]||[]).forEach(v=>m[v]=(m[v]||0)+1)); return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,n).map(x=>x[0]); };
@@ -1905,9 +1919,10 @@ function rerenderKeepFocus(){ const ae=document.activeElement; const id=ae&&ae.i
 const LIVE = new Set(["text","date","textarea"]);
 document.addEventListener("input",e=>{ const el=e.target;
   if(el.dataset.r!==undefined){ A().risks[+el.dataset.r][el.dataset.f]=el.value; save(); if(el.tagName==="SELECT") rerenderKeepFocus(); return; }
+  if(el.dataset.mk){ const mk=el.dataset.mk, cur=Array.isArray(A()[mk])?A()[mk].slice():[]; const i=cur.indexOf(el.value); if(el.checked&&i<0) cur.push(el.value); if(!el.checked&&i>=0) cur.splice(i,1); A()[mk]=cur; save(); rerenderKeepFocus(); return; }
   const k=el.dataset.k; if(!k) return;
   if(el.type==="checkbox") A()[k]=el.checked; else A()[k]=el.value;
-  save(); if(k==="s1_ideas"){ if(syncS1Cases()){ const ta=document.getElementById("f_s1_cases"); if(ta) ta.value=S.inst.s1_cases||""; } } if(!(LIVE.has(el.type)||el.tagName==="TEXTAREA")) rerenderKeepFocus(); else renderRail(+((location.hash.match(/stage-(\d)/)||[])[1]||0));
+  save(); if(!(LIVE.has(el.type)||el.tagName==="TEXTAREA")) rerenderKeepFocus(); else renderRail(+((location.hash.match(/stage-(\d)/)||[])[1]||0));
 });
 document.addEventListener("input",e=>{ const el=e.target;
   if(el.dataset.tri){ const id=(location.hash.match(/^#triage-([a-z0-9]+)$/)||[])[1]; const s=id?S.systems.find(x=>x.id===id):null; const a=s?s.a:triDraft; const k=el.dataset.tri; a[k]= el.type==="checkbox"?(k==="path_choice"?(el.checked?"full":""):el.checked):el.value; if(s) save(); if(el.type!=="text"){ const y=window.scrollY; renderTriage(id||null); renderRail(0); window.scrollTo(0,y); } else { const b=$("#createsys"); const t=triage(a); if(b) b.disabled=!(t.done&&a.sys); } return; }
