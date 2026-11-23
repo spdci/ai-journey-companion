@@ -640,7 +640,7 @@ function viewHome(){
    <a class="card entry" href="#essentials"><span class="num">READ</span><h3 style="margin-top:6px">The essentials</h3><p>One thing to read and one thing to do per stage.</p><span class="go">Open →</span></a>
    <a class="card entry" href="#workshops"><span class="num">RUN</span><h3 style="margin-top:6px">Workshops</h3><p>${SESSIONS.length} ready-made sessions with agendas, invite lists and questions to ask.</p><span class="go">Open →</span></a>
    <a class="card entry" href="#cases"><span class="num">LEARN</span><h3 style="margin-top:6px">${TRACKER.length} real cases</h3><p>What others built, how far they got, and what went wrong.</p><span class="go">Open →</span></a>
-   <a class="card entry" href="#stage-1"><span class="num">CHECK</span><h3 style="margin-top:6px">Check yourself</h3><p>Short questions at the end of every stage, with explanations. Nothing is scored.</p><span class="go">Start at Stage 1 →</span></a>
+   <a class="card entry" href="#stage-1"><span class="num">GO DEEPER</span><h3 style="margin-top:6px">The seven stages</h3><p>Why each stage matters, what to read, what to do and who is involved.</p><span class="go">Start at Stage 1 →</span></a>
   </div></div></section>
   <section class="block"><div class="wrap"><h2>Where are you on the journey?</h2><p class="sub">Every institution starts somewhere different. Pick the description closest to yours.</p>
    <div class="grid4">${ENTRY.map(e=>`<a class="card entry" href="#stage-${e.s}"><span class="num">STAGE ${e.s}</span><h3 style="margin-top:6px">${esc(e.t)}</h3><p>${esc(e.d)}</p><span class="go">Go to Stage ${e.s} →</span></a>`).join("")}</div>
@@ -653,7 +653,7 @@ function viewHome(){
    <div class="grid3">${STAGES.map(s=>`<a class="card" href="#stage-${s.id}"><span class="num">STAGE ${s.id}${s.gate?" · "+esc(s.gate.split(" · ")[0]).toUpperCase():""}</span><h3 style="font-size:17px;margin:6px 0">${esc(s.title)}</h3><p style="margin:0;color:var(--muted);font-size:15px">${esc(s.question)}</p></a>`).join("")}</div></div></section>`;
 }
 
-const SECS=[["ess","In short"],["why","Why it matters"],["read","What to read"],["do","What to do"],["learn","Understand"],["who","Who is involved"],["ready","Ready to move on"],["check","Check yourself"]];
+const SECS=[["ess","In short"],["why","Why it matters"],["read","What to read"],["do","What to do"],["learn","Understand"],["who","Who is involved"],["ready","Ready to move on"]];
 function viewStage(id){
   const s=STAGES[id-1], x=X[id]; if(!s) return viewHome();
   const isInst=x.phase==="inst";
@@ -668,7 +668,7 @@ function viewStage(id){
    <div class="row"><div class="bignum ${isInst?"inst":""}">${id}</div><div><div class="eyebrow">Stage ${id} of ${NSTAGES}</div><h1>${esc(s.title)}</h1><div class="q">${esc(s.question)}</div>
    <div class="pills"><span class="pill">Lead: ${esc(x.lead)}</span>${s.gate?`<span class="pill o">Ends at ${esc(s.gate)}</span>`:""}</div></div></div>
    <div class="stepper" aria-label="Stages">${step}</div><button class="printbtn" onclick="printPage()">Print or save as PDF</button></div></section>
-  <div class="secnav"><div class="wrap">${SECS.filter(c=>c[0]!=="check"||(s.quiz||[]).length).map((c,i)=>`<button data-go="${c[0]}" class="${i?"":"on"}">${c[1]}</button>`).join("")}</div></div>
+  <div class="secnav"><div class="wrap">${SECS.map((c,i)=>`<button data-go="${c[0]}" class="${i?"":"on"}">${c[1]}</button>`).join("")}</div></div>
   <div class="wrap">
    <div class="sec" id="s-ess">${essBox(id)}</div>
    <div class="sec" id="s-why"><h2>${ic("why")}Why this stage matters</h2><p class="why">${esc(s.why)}</p></div>
@@ -677,7 +677,7 @@ function viewStage(id){
    <div class="sec" id="s-learn"><h2>${ic("learn")}Understand the key ideas</h2><p class="sub">Concepts to keep in mind, and interactive explainers built from the AI Hub tools.</p><div class="grid${s.concepts.length===4?"4":"3"}">${s.concepts.map(c=>`<div class="concept"><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join("")}</div>${x.explainer.map(k=>EXPL[k]()).join("")}${x.cases?simWidget(x.cases):""}</div>
    <div class="sec" id="s-who"><h2>${ic("who")}Who is involved</h2><p class="sub">${s.raci.length?"Activities from the Playbook's RACI matrix (Annex I) that belong to this stage.":""}</p>${who}</div>
    <div class="sec" id="s-ready"><h2>${ic("ready")}You are ready to move on when you have…</h2><div class="ready">${s.outputs.map(o=>`<div>${tick}<span>${esc(o)}</span></div>`).join("")}</div></div>
-   ${checkBlock(s)}
+
    <div class="pager">${prev?`<a href="#stage-${prev.id}"><small>← Stage ${prev.id}</small><b>${esc(prev.title)}</b></a>`:""}${next?`<a class="nx" href="#stage-${next.id}"><small>Stage ${next.id} →</small><b>${esc(next.title)}</b></a>`:`<a class="nx" href="#library"><small>Next →</small><b>Browse the full library</b></a>`}</div>
   </div>`;
 }
@@ -723,7 +723,7 @@ const SESSIONS = [
  {id:"A", scope:"inst", stage:1, title:"Kick-off: a shared language", dur:"90 min", who:["PO","TL","LD","FS","AP"], lead:"Journey lead",
   purpose:"Give programme, IT, legal and frontline staff the same vocabulary, and collect real delivery problems before anyone talks about solutions.",
   prep:["Participants skim the Stage 1 ‘What to read’ cards beforehand (10 minutes)","Print the eight capability names from the Taxonomy (§1.1) on cards","Draw the delivery chain on a wall: Outreach · Assess · Enrol · Provide · Manage"],
-  agenda:[["10′","Welcome, purpose, how the journey works (Journey map page)"],["20′","Capability matching: teams place the eight capability cards next to examples from their own programmes. Is it AI, or rule-based automation?"],["20′","Two contrasting cases from the Evidence Review: Togo's targeting and the Dutch SyRI system. Same technique, different governance. What made the difference?"],["25′","Problem long-list: sticky notes on the delivery chain wall. Problems only, no solutions or products"],["10′","Stage 1 ‘Check yourself’ questions together, one per table"],["5′","Close: agree who keeps the long-list and when you meet again"]],
+  agenda:[["10′","Welcome, purpose, how the journey works (Journey map page)"],["20′","Capability matching: teams place the eight capability cards next to examples from their own programmes. Is it AI, or rule-based automation?"],["20′","Two contrasting cases from the Evidence Review: Togo's targeting and the Dutch SyRI system. Same technique, different governance. What made the difference?"],["25′","Problem long-list: sticky notes on the delivery chain wall. Problems only, no solutions or products"],["10′","Round: each table shares the one finding from the cases that surprised them most"],["5′","Close: agree who keeps the long-list and when you meet again"]],
   prompts:["Who experiences this problem, and how do we know?","Would a better form, data exchange or more staff solve it?","Is this AI, or fixed rules that do not learn from data?"],
   outputs:"A shared vocabulary and a long-list of problems"},
  {id:"B", scope:"inst", stage:1, title:"Readiness Walk and data readiness", dur:"60–75 min", who:["EL","PO","TL","LD","FS","IA"], lead:"Journey lead or neutral facilitator",
@@ -822,11 +822,6 @@ function viewWorkshops(){
 function wsLink(id){ const s=SESSIONS.filter(x=>x.stage===id); if(!s.length) return "";
   return `<div class="wslink">${s.map(x=>`<a href="#workshops" data-ws="${x.id}"><span class="wid">${x.id}</span><span><b>Run this stage as a workshop:</b> ${esc(x.title)} <small>(${esc(x.dur)})</small></span></a>`).join("")}</div>`; }
 
-/* Check yourself */
-function checkBlock(s){ if(!(s.quiz||[]).length) return "";
-  return `<div class="sec" id="s-check"><h2>${ic("faq")}Check yourself</h2><p class="sub">Choose an answer to see the explanation and its source. This is for your own learning: nothing is scored or saved.</p>
-  <div class="qz">${s.quiz.map((q,qi)=>`<div class="qq" data-a="${q.a}"><p class="qt"><span>${qi+1}</span>${esc(q.q)}</p><div class="qo">${q.o.map((o,oi)=>`<button data-o="${oi}">${esc(o)}</button>`).join("")}</div><div class="qe"><p><b class="verdict"></b> ${esc(q.e)}</p>${q.ref?`<div class="ref">Source: ${esc(q.ref)}</div>`:""}</div></div>`).join("")}</div>
-  <p class="qscore" id="qscore"></p></div>`; }
 
 /* Essentials box, gate table, essentials page */
 function essBox(id){ const e=ESS[id]; const r=RES[e.read[0]];
@@ -887,14 +882,6 @@ function bindPage(){
   const lf=$("#libf"); if(lf) lf.addEventListener("click",e=>{ const b=e.target.closest("[data-f]"); if(!b) return; libFilter=b.dataset.f; const y=window.scrollY; $("#app").innerHTML=viewLibrary(); bindPage(); window.scrollTo(0,y); });
   const rb=$("#roleb"); if(rb) rb.addEventListener("click",e=>{ const b=e.target.closest("[data-r]"); if(!b) return; roleSel=b.dataset.r; const y=window.scrollY; $("#app").innerHTML=viewRoles(); bindPage(); window.scrollTo(0,y); });
   const gq=$("#gq"); if(gq) gq.addEventListener("input",()=>{ $("#gl").innerHTML=glossList(gq.value); });
-  // check yourself
-  document.querySelectorAll(".qq").forEach(q=>q.addEventListener("click",e=>{ const b=e.target.closest("[data-o]"); if(!b||q.classList.contains("done")) return;
-    const ok=+b.dataset.o===+q.dataset.a; q.classList.add("done",ok?"ok":"no"); b.classList.add("pick");
-    q.querySelectorAll("[data-o]").forEach(x=>{ x.disabled=true; if(+x.dataset.o===+q.dataset.a) x.classList.add("right"); });
-    q.querySelector(".verdict").textContent=ok?"Correct.":"Not quite.";
-    const all=[...document.querySelectorAll(".qq")], d=all.filter(x=>x.classList.contains("done")), r=all.filter(x=>x.classList.contains("ok"));
-    const sc=$("#qscore"); if(sc){ sc.innerHTML=d.length===all.length?`You answered ${r.length} of ${all.length} correctly. <button class="lnkbtn" id="qreset">Try again</button>`:"";
-      const rb=$("#qreset"); if(rb) rb.addEventListener("click",()=>{ document.querySelectorAll(".qq").forEach(x=>{ x.classList.remove("done","ok","no"); x.querySelectorAll("[data-o]").forEach(o=>{ o.disabled=false; o.classList.remove("right","pick"); }); }); sc.innerHTML=""; }); } }));
   // tracker widget
   const su=$("#simuc"); if(su) su.addEventListener("change",()=>{ simUC=su.value; const w=$("#simw"); w.outerHTML=simWidget(w.querySelector("h3").textContent.includes("risks")?"risk":"learn"); bindPage(); });
   document.querySelectorAll("[data-uc]").forEach(a=>a.addEventListener("click",()=>{ CF={q:"",uc:a.dataset.uc,reg:"",st:"",crit:""}; caseLimit=24; if(location.hash==="#cases") render(); }));
