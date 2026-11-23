@@ -291,6 +291,11 @@ legend{font-weight:700;color:var(--ink)}
 .docpill button{border:0;background:var(--navy);color:#fff;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--display)}
 .bar i{background:var(--orange)}
 
+.grid2{align-items:end}
+.trigrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 20px;align-items:end}
+.trigrid .field{margin-bottom:14px}
+.trigrid select{min-height:42px}
+@media (max-width:860px){.trigrid{grid-template-columns:1fr}}
 .foot{font-size:12.5px;color:var(--muted);margin-top:28px;max-width:80ch}
 @media (max-width:860px){
   .wrap{grid-template-columns:1fr}
@@ -450,6 +455,7 @@ const STAGES = [
      {k:"inst", l:"Institution", t:"text", h:"Ministry, agency or fund responsible"},
      {k:"inst_progs", l:"Programmes in scope for AI", t:"text"},
      {k:"inst_region", l:"Region", t:"select", o:[...new Set(TRACKER.map(c=>c.reg))].sort(), h:"Used to find comparable cases in the AI Hub Tracker"},
+     {k:"inst_country", l:"Country", t:"text", dl:()=>[...new Set(TRACKER.filter(c=>!A().inst_region||c.reg===A().inst_region).map(c=>c.c))].sort(), h:"Type any country. Suggestions are the countries with cases in the AI Hub Tracker for the region you chose; cases from your own country rank higher in Stage 4."},
      {k:"inst_income", l:"Country income group", t:"select", o:["Low income","Lower middle income","Upper middle income","High income"]},
      {k:"lead", l:"Journey lead (role)", t:"text", h:"Record a role, not a named person"},
      {k:"team", l:"Core team (roles)", t:"textarea", h:"e.g. programme manager, MIS lead, DPO, grievance specialist"}
@@ -881,7 +887,7 @@ const EXAMPLE = {
 
 
 const EXAMPLE_JOBS = {
- inst:{ inst:"National employment agency, Morocco (fictional example)", inst_progs:"Job search assistance and placement; youth employment programme (fictional examples)", inst_region:"Middle East, North Africa, Afghanistan & Pakistan", inst_income:"Lower middle income",
+ inst:{ inst:"National employment agency, Morocco (fictional example)", inst_progs:"Job search assistance and placement; youth employment programme (fictional examples)", inst_region:"Middle East, North Africa, Afghanistan & Pakistan", inst_country:"Morocco", inst_income:"Lower middle income",
   lead:"Director of Employment Services", team:"Employment services lead; head of information systems; data protection focal point; two counsellor representatives; labour market analyst; university data science partner",
   s1_cases:"Closest tracker cases: MyCareersFuture (SGP-001), The Work (KOR-002), Hello Work (JPN-001), Estonia's OTT decision support (EST-003), and ILO SkillLab pilots in Lebanon (LBN-001) and Egypt (EGY-001). Lessons: matching can repeat gender and age gaps from past placements; counsellors only use tools they understand; people with thin digital profiles get worse matches.",
   s1_ideas:"Counsellors search vacancies by hand; vacancy texts are unstructured in Arabic and French; many jobseekers drop out after registration; little follow-up data on placements.",
@@ -956,7 +962,7 @@ function newSys(id){ return {id:id||("s"+Date.now().toString(36)), a:{risks:[],g
 function splitV1(o){ const inst={}, a={risks:[],gates:[]}; Object.entries(o.a||{}).forEach(([k,v])=>{ (isInstKey(k)?inst:a)[k]=v; }); a.risks=a.risks||[]; a.gates=a.gates||[]; const s=newSys("s1"); s.a=a; return {v:2,isExample:!!o.isExample,inst,systems:[s],cur:"s1",quiz:o.quiz||{}}; }
 function blank(){ return {v:2,isExample:false,inst:{},systems:[],cur:null,quiz:{}} }
 function fix(o){ if(!o.v&&o.a) o=splitV1(o); o.inst=o.inst||{}; o.systems=o.systems||[]; o.systems.forEach(s=>{ s.a=s.a||{}; s.a.risks=s.a.risks||[]; s.a.gates=s.a.gates||[]; }); o.quiz=o.quiz||{}; if(!o.systems.some(s=>s.id===o.cur)) o.cur=o.systems[0]?o.systems[0].id:null; return o; }
-function exampleState(which){ if(which==="jobs"){ const o={v:2,isExample:true,exampleId:"jobs",inst:JSON.parse(JSON.stringify(EXAMPLE_JOBS.inst)),systems:[],cur:"s1",quiz:{}}; const s=newSys("s1"); s.a=JSON.parse(JSON.stringify(EXAMPLE_JOBS.a)); s.a.risks=s.a.risks||[]; s.a.gates=s.a.gates||[]; o.systems.push(s); return o; } const o=splitV1(JSON.parse(JSON.stringify({...EXAMPLE,quiz:{}}))); o.isExample=true; Object.assign(o.inst,{inst_region:"Middle East, North Africa, Afghanistan & Pakistan",inst_income:"Lower middle income",walkroom:{size:"14",c:{"0_f_0":"9","0_f_1":"4","0_f_2":"6","0_b_0":"5","0_b_1":"10","0_b_2":"7","1_f_0":"6","1_f_1":"8","1_f_2":"9","1_b_0":"5","1_b_1":"11","1_b_2":"3","2_f_0":"10","2_f_1":"9","2_f_2":"5","2_b_0":"8","2_b_1":"12","2_b_2":"6","3_f_0":"7","3_f_1":"9","3_f_2":"4","3_b_0":"6","3_b_1":"8","3_b_2":"11"}}}); o.exampleId="chatbot"; return o; }
+function exampleState(which){ if(which==="jobs"){ const o={v:2,isExample:true,exampleId:"jobs",inst:JSON.parse(JSON.stringify(EXAMPLE_JOBS.inst)),systems:[],cur:"s1",quiz:{}}; const s=newSys("s1"); s.a=JSON.parse(JSON.stringify(EXAMPLE_JOBS.a)); s.a.risks=s.a.risks||[]; s.a.gates=s.a.gates||[]; o.systems.push(s); return o; } const o=splitV1(JSON.parse(JSON.stringify({...EXAMPLE,quiz:{}}))); o.isExample=true; Object.assign(o.inst,{inst_region:"Middle East, North Africa, Afghanistan & Pakistan",inst_country:"Lebanon",inst_income:"Lower middle income",walkroom:{size:"14",c:{"0_f_0":"9","0_f_1":"4","0_f_2":"6","0_b_0":"5","0_b_1":"10","0_b_2":"7","1_f_0":"6","1_f_1":"8","1_f_2":"9","1_b_0":"5","1_b_1":"11","1_b_2":"3","2_f_0":"10","2_f_1":"9","2_f_2":"5","2_b_0":"8","2_b_1":"12","2_b_2":"6","3_f_0":"7","3_f_1":"9","3_f_2":"4","3_b_0":"6","3_b_1":"8","3_b_2":"11"}}}); o.exampleId="chatbot"; return o; }
 function load(){ try{ const raw=localStorage.getItem(KEY); if(raw){ const o=JSON.parse(raw); return fix(o); } }catch(e){} return blank(); }
 let S = load();
 let saveT=null;
@@ -1039,7 +1045,7 @@ function renderRail(cur){
 function opts(f){ return f.o || (f.list?LISTS[f.list]:[]); }
 function fieldHTML(f){
   const v=A()[f.k]; const id="f_"+f.k; let inp="";
-  if(f.t==="text") inp=`<input type="text" id="${id}" data-k="${f.k}" value="${esc(v)}">`;
+  if(f.t==="text") inp=`<input type="text" id="${id}" data-k="${f.k}" value="${esc(v)}"${f.dl?` list="${id}_dl" autocomplete="off"`:""}>`+(f.dl?`<datalist id="${id}_dl">${f.dl().map(o=>`<option value="${esc(o)}">`).join("")}</datalist>`:"");
   else if(f.t==="date") inp=`<input type="date" id="${id}" data-k="${f.k}" value="${esc(v)}">`;
   else if(f.t==="textarea") inp=`<textarea id="${id}" data-k="${f.k}">${esc(v)}</textarea>`;
   else if(f.t==="select") inp=`<select id="${id}" data-k="${f.k}"><option value="">Choose…</option>${opts(f).map(o=>`<option ${o===v?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
@@ -1178,7 +1184,7 @@ function exampleBanner(){ const j=S.exampleId==="jobs"; return `<div class="bann
 /* ===================== AI HUB TRACKER MATCHING ===================== */
 function nz(s){ return String(s||"").toLowerCase().replace(/[^a-z]/g,""); }
 function same(x,y){ x=nz(x); y=nz(y); return !!x&&!!y&&(x===y||x.startsWith(y)||y.startsWith(x)); }
-const SIM_W={uc:30,cap:20,fn:15,pil:8,crit:7,sens:5,pt:5,reg:4,inc:4};
+const SIM_W={uc:30,cap:20,fn:15,pil:8,crit:7,sens:5,pt:5,cty:6,reg:4,inc:4};
 function simScore(a,c){ let s=0,poss=0; const why=[];
   const add=(have,w,hit,label,half,halfLabel)=>{ if(!have) return; poss+=w; if(hit){ s+=w; why.push(label); } else if(half){ s+=Math.round(w*0.4); why.push(halfLabel); } };
   add(a.usecase,SIM_W.uc,same(a.usecase,c.uc),"Same use case",(c.uc2||[]).some(x=>same(x,a.usecase)),"Related use case");
@@ -1188,7 +1194,7 @@ function simScore(a,c){ let s=0,poss=0; const why=[];
   add(a.criticality,SIM_W.crit,a.criticality===c.crit,"Same criticality");
   add(a.sensitivity,SIM_W.sens,same(a.sensitivity,c.sens),"Same data sensitivity");
   add(a.progtype,SIM_W.pt,same(a.progtype,c.pt),"Same programme type");
-  add(a.inst_region,SIM_W.reg,a.inst_region===c.reg,"Same region");
+  add(a.inst_country,SIM_W.cty,same(a.inst_country,c.c),"Same country"); add(a.inst_region,SIM_W.reg,a.inst_region===c.reg,"Same region");
   add(a.inst_income,SIM_W.inc,a.inst_income===c.inc,"Same income group");
   return {c, pct: poss?Math.round(s/poss*100):0, why, poss}; }
 function similarCases(n){ const a=A(); if(!a.usecase&&!a.capability) return []; return TRACKER.map(c=>simScore(a,c)).filter(r=>r.pct>=35).sort((x,y)=>y.pct-x.pct||(y.c.ns-x.c.ns)).slice(0,n||8); }
@@ -1302,7 +1308,7 @@ const range=(p,n)=>Array.from({length:n},(_,i)=>p+i);
 const DOCS=[
  {id:"readiness",scope:"inst",title:"Institutional readiness and governance report",ic:"docs",fmts:["docx"],stages:[1,2,3],
   from:"Data Readiness Checklist, Readiness Walk, six readiness areas, Playbook roles (Annex I RACI)",
-  keys:()=>["inst","inst_progs","lead","team"].concat(DR.flatMap((d,i)=>d[1].map((_,j)=>"dr_"+i+"_"+j)),["walk","ar_strategy","ar_legal","ar_data","ar_tech","ar_gov","ar_ethics","w_back","w_forward","w_shared"],ROLES.map(r=>"role_"+r[0]),["g_roles","g_oneA","g_tiers","g_register","g_review","g_law","g_appetite","g_escalation"])},
+  keys:()=>["inst","inst_progs","inst_region","inst_country","inst_income","lead","team"].concat(DR.flatMap((d,i)=>d[1].map((_,j)=>"dr_"+i+"_"+j)),["walk","ar_strategy","ar_legal","ar_data","ar_tech","ar_gov","ar_ethics","w_back","w_forward","w_shared"],ROLES.map(r=>"role_"+r[0]),["g_roles","g_oneA","g_tiers","g_register","g_review","g_law","g_appetite","g_escalation"])},
  {id:"modelcard",scope:"sys",title:"Model Card",ic:"docs",fmts:["docx"],stages:[4,6,7,9],
   from:"AI Hub example model card structure, filled from Stages 4, 6, 7 and 9",
   keys:()=>["sys","mc_version","mc_type","mc_entity|inst","owner","status","regclass","criticality","oversight","entitle","mc_purpose|desc","mc_users|users","mc_out","mc_inputs|datasrc","mc_io","mc_outputs","mc_role|ov_where","explain","continuity","mc_train|datasrc","mc_geo","mc_period","legalbasis","sensitivity","mc_limits","mc_eval","mc_metrics|perf","mc_bias","risks","ov_where","ov_authority","m_indicators","m_who","mc_triggers","challenge","mc_caveats"].filter(k=>!(isLight()&&["mc_eval","mc_bias"].includes(k)))},
@@ -1357,7 +1363,7 @@ async function makeDocx(title,children){ const X=await loadLib("lib/docx.min.js"
 /* ---- document builders (use A() for the current system) ---- */
 function yn(x){ return x===true?"Yes":x==="Yes"||x==="No"||x==="Partly"?x:""; }
 const DOCBUILD={
- readiness(){ const a=A(), d=drScore(), rr=roomResult(); const c=cover("Institutional readiness and governance",[a.inst, a.inst_progs?("Programmes in scope: "+a.inst_progs):"", [a.inst_region,a.inst_income].filter(Boolean).join(" · ")]);
+ readiness(){ const a=A(), d=drScore(), rr=roomResult(); const c=cover("Institutional readiness and governance",[a.inst, a.inst_progs?("Programmes in scope: "+a.inst_progs):"", [a.inst_country,a.inst_region,a.inst_income].filter(Boolean).join(" · ")]);
   c.push(H("1. The journey team"),KV([["Institution",a.inst],["Programmes in scope",a.inst_progs],["Journey lead (role)",a.lead],["Core team (roles)",a.team]]));
   c.push(H("2. Data Readiness Checklist (AI Hub Clinic 2)"),KV([["Total score",d.ans?d.tot+" / 34":""],["Level",d.done?d.lvl:(d.ans?`Incomplete (${d.ans}/17 answered)`:"")],["What this means",d.done?drAdvice(d.lvl):""],["Quality floor (6/12)",d.dims[1]?(d.dims[1][1]+" / 12"+(d.qualityLow?": below the floor, fix data quality first":"")):""]]),GAP(),
    TBL(["Dimension","Question","Answer"],DR.flatMap((dd,i)=>dd[1].map((q,j)=>[dd[0],q,a["dr_"+i+"_"+j]||""])),[16,64,20]));
@@ -1378,7 +1384,7 @@ const DOCBUILD={
   c.push(H("4. System description"),H("Inputs",2),...BUL(lines(either(a.mc_inputs,a.datasrc))),H("Processing stages",2),...BUL(lines(a.mc_io)),H("Outputs",2),...BUL(lines(a.mc_outputs)));
   c.push(H("5. Role in the business process"),...BUL(lines(either(a.mc_role,a.ov_where))),KV([["Fallback if the system is unavailable",a.continuity],["Non-digital alternative, no penalty",a.alt_channel?"Yes":""]]));
   c.push(H("6. Explainability and transparency"),KV([["What is explained, to whom, in which languages",a.explain],["People told AI is used",a.o_inform?"Yes":""],["How people can challenge a decision",a.challenge]]));
-  c.push(H("7. Training and knowledge data"),KV([["Data sources",either(a.mc_train,a.datasrc)],["Geographic scope",a.mc_geo],["Temporal coverage",a.mc_period],["Uses personal data",a.personal],["Highest data sensitivity",a.sensitivity],["Cross-system linkage",a.linkage],["Legal basis for processing",a.legalbasis],["Data residency",a.residency],["Owner of data quality",a.dq_owner]]));
+  c.push(H("7. Training and knowledge data"),KV([["Data sources",either(a.mc_train,a.datasrc)],["Geographic scope",either(a.mc_geo,a.inst_country)],["Temporal coverage",a.mc_period],["Uses personal data",a.personal],["Highest data sensitivity",a.sensitivity],["Cross-system linkage",a.linkage],["Legal basis for processing",a.legalbasis],["Data residency",a.residency],["Owner of data quality",a.dq_owner]]));
   c.push(H("8. Known limitations"),...BUL(lines(a.mc_limits)));
   c.push(H("9. Evaluation and performance"),KV([["Evaluation dataset",a.mc_eval]]),GAP(),metrics.length?TBL(["Metric","Group","Value"],metrics.map(m=>[m[0]||"",m[1]||"",m.slice(2).join(" | ")]),[40,35,25]):P(a.perf),
    H("Testing completed",2),TBL(["Test","Done"],[["Realistic conditions on local data",a.t_real],["Errors disaggregated by group",a.t_groups],["Adversarial or red-team testing",a.t_red],["User acceptance testing",a.t_uat],["Independent validation",a.t_indep]].map(([k,v])=>[k,v?"Yes":"Not yet"]),[75,25]));
@@ -1475,12 +1481,12 @@ function renderTriage(id){
   const a=s?s.a:triDraft; const t=triage(a);
   const sel=(k,list,l,hint)=>`<div class="field"><label class="lbl" for="tr_${k}">${esc(l)}</label>${hint?`<span class="hint">${esc(hint)}</span>`:""}<select id="tr_${k}" data-tri="${k}"><option value="">Choose…</option>${list.map(o=>`<option ${o===a[k]?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`;
   let h=`<section class="panel"><div class="eyebrow">${s?"Triage · "+esc(s.a.sys||"Untitled system"):"Add an AI system"}</div><h1 style="font-size:26px;font-weight:800;margin:6px 0 8px">Triage: how much of the journey does this system need?</h1><p class="why">Six questions, about five minutes. Any high-impact trigger puts the system on the full path. Otherwise it takes the light path: the same stages and gates, with some deeper worksheets hidden and a lower-risk approval route (RACI B5). The questions use Tool 1's high-risk indicators and the AI Register's value lists, and the answers pre-fill Stages 4 and 5.</p></section>
-  <section class="panel"><div class="tri">${s?"":`<div class="field"><label class="lbl" for="tr_sys">Working name of the AI system</label><input type="text" id="tr_sys" data-tri="sys" value="${esc(a.sys)}"></div>`}<div class="grid2">
+  <section class="panel"><div class="tri">${s?"":`<div class="field"><label class="lbl" for="tr_sys">Working name of the AI system</label><input type="text" id="tr_sys" data-tri="sys" value="${esc(a.sys)}"></div>`}<div class="trigrid">
   ${sel("entitle",LISTS.entitle,"1 · Effect on people's entitlements","Directly or indirectly, through a human decision")}
-  ${sel("sensitivity",LISTS.sensitivity,"2 · Most sensitive data it uses")}
-  ${sel("users",LISTS.users,"3 · Who uses or meets it")}
+  ${sel("sensitivity",LISTS.sensitivity,"2 · Most sensitive data it uses","The highest category in any input or log")}
+  ${sel("users",LISTS.users,"3 · Who uses or meets it","Staff, the public, or both")}
   ${sel("tri_scale",TRI_SCALE,"4 · How many people could be affected","Tool 1 scale bands")}
-  ${sel("agentic",LISTS.agentic,"5 · Does it take actions in systems by itself?")}</div>
+  ${sel("agentic",LISTS.agentic,"5 · Does it take actions in systems by itself?","For example updating records or sending messages")}</div>
   <div class="field" style="margin-top:6px"><span class="lbl" style="font-weight:600">6 · Tool 1 high-risk indicators: tick any that apply</span>${HIGHSEV.map((x,i)=>`<label class="checkrow" for="tr_hs_${i}"><input type="checkbox" id="tr_hs_${i}" data-tri="hs_${i}" ${a["hs_"+i]?"checked":""}><span><b>${esc(x[0])}:</b> ${esc(x[1])}</span></label>`).join("")}</div></div>`;
   if(t.done){ h+=`<div class="result"><span class="chip ${t.path==="light"?"good":"warn"}" style="font-size:15px">${t.path==="light"?"Light path":"Full path"}</span><span class="msg">${t.reasons.map(esc).join(" · ")}</span></div>`;
     if(!t.forced) h+=`<label class="checkrow" style="margin-top:8px"><input type="checkbox" data-tri="path_choice" ${a.path_choice==="full"?"checked":""}><span>Use the full path anyway (for example a first AI system, a politically sensitive programme, or a new vendor)</span></label>`;
