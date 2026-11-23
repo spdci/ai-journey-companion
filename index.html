@@ -309,6 +309,43 @@ legend{font-weight:700;color:var(--ink)}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 
+
+/* ===== role view ===== */
+.rolepick{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.rolecard{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;font:inherit;color:var(--ink)}
+.rolecard b{font-family:var(--display);font-size:15px}
+.rolecard span{font-size:13.5px;color:var(--muted);line-height:1.45}
+.rolecard:hover{border-color:var(--accent)}
+.rolecard.on{border-color:var(--navy,#1E2746);background:var(--navy,#1E2746);color:#fff}.rolecard.on span{color:#C9D6EA}
+.rolecard.fac{border-style:dashed}
+.rolehead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.rolehead h2{margin:2px 0 4px;font-size:21px}.rolehead p{margin:0;color:var(--muted);font-size:14.5px;max-width:70ch}
+.mystages{display:grid;gap:6px;margin-top:14px}
+.mystage{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink);background:var(--surface)}
+.mystage:hover{border-color:var(--accent)}
+.mystage.dim{opacity:.6}
+.ms-n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13px;display:grid;place-items:center}
+.ms-t{flex:1;min-width:0}.ms-t b{display:block;font-size:14.5px}.ms-t small{display:block;color:var(--muted);font-size:12.5px;line-height:1.4}
+.rl{flex:none;display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.rl-A{background:#FF7D41;color:#fff}.rl-R{background:#1E2746;color:#fff}.rl-P{background:#1E2746;color:#fff}.rl-C{background:#DCEBFF;color:#1E2746}.rl-I{background:#EEF1F6;color:#5B6478}.rl-n{background:#EEF1F6;color:#8A93A6}
+.rolebox{margin-bottom:16px;padding:12px 16px;border-radius:12px;background:#EEF5FF;border:1px solid #CFE1FB;font-size:14.5px;line-height:1.5}
+.rolebox ul{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.rolebox.dim{background:var(--surface2,#F3F5F9);border-color:var(--line)}
+.rolebox.fac{background:#FFF8F0;border:1px dashed #FFB98F}
+.invite{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:13.5px}
+.chip.yours{background:#1E2746;color:#fff}
+.wl{font-size:12.5px;color:var(--muted)}
+.othergrp{background:var(--surface2,#F3F5F9)}
+.rolechip{display:block;margin:0 0 12px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);text-decoration:none;color:var(--ink)}
+.rolechip span{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.rolechip b{font-size:13.5px}
+.stagelink.rdim,.jcard.rdim{opacity:.55}
+.stagelink{position:relative}
+.stagelink .rl{position:absolute;right:6px;top:8px;font-size:11px;padding:1px 7px}
+.stagelink:has(.rl) .t{display:inline-block;padding-right:30px}
+.jrole{order:10;margin-top:auto}
+@media (max-width:860px){.rolehead{flex-direction:column}}
+
 /* ===== simplified journey ===== */
 fieldset{min-width:0}
 .chip{max-width:100%;white-space:normal;overflow-wrap:anywhere}
@@ -1093,9 +1130,9 @@ function progress(st){ if(st.id>3&&!curSys()) return 0; const ks=stageKeys(st); 
 
 /* ===================== RENDER: RAIL ===================== */
 function ring(p){ const r=13,c=2*Math.PI*r; return `<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="${r}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="${c*p/100} ${c}" transform="rotate(-90 17 17)"/></svg>`; }
-function railLink(st,cur){ const p=progress(st); return `<a class="stagelink ${cur===st.id?"on":""}" href="#stage-${st.id}"><span class="dot">${ring(p)}${st.id}</span><span><span class="t">${esc(st.title)}</span><br><span class="p">${p}% · ${esc(st.short)}</span></span></a>`+(st.gate?`<div class="gatemark">◆ ${esc(st.gate.split(" · ")[0])}</div>`:""); }
+function railLink(st,cur){ const p=progress(st); const m=myStage(st); const dim=m&&(!m.lvl||m.lvl==="I"); return `<a class="stagelink ${cur===st.id?"on":""} ${dim?"rdim":""}" href="#stage-${st.id}"><span class="dot">${ring(p)}${st.id}</span><span style="flex:1"><span class="t">${esc(st.title)}</span><br><span class="p">${p}% · ${esc(st.short)}</span></span>${m?lvlChip(m.lvl,true):""}</a>`+(st.gate?`<div class="gatemark">◆ ${esc(st.gate.split(" · ")[0])}</div>`:""); }
 function renderRail(cur){
-  let h=`<h4>Our institution · once</h4>`;
+  const rd=roleDef(); let h=`<a class="rolechip" href="#role">${rd?`<span>Your role</span><b>${esc(rd.t)}</b>`:`<span>Your role</span><b>Choose your role →</b>`}</a><h4>Our institution · once</h4>`;
   STAGES.filter(s=>s.id<=3).forEach(st=>h+=railLink(st,cur));
   h+=`<div class="railsec"><h4 style="margin:0">Our AI systems · per system</h4>`;
   if(S.systems.length){ const s=curSys(), t=s?triage(s.a):null;
@@ -1105,7 +1142,7 @@ function renderRail(cur){
   h+=`</div>`;
   STAGES.filter(s=>s.id>3).forEach(st=>h+=railLink(st,cur));
   h+=`<div class="railsec"><a class="stagelink ${cur==="docs"?"on":""}" href="#documents"><span class="dot">▤</span><span><span class="t">Documents</span><br><span class="p">Model card, risk assessment, register…</span></span></a></div>`;
-  h+=`<div class="railsec"><a class="stagelink ${cur==="fac"?"on":""}" href="#facilitator"><span class="dot">◆</span><span><span class="t">Facilitator pack</span><br><span class="p">Workshops and gate meetings</span></span></a></div>`;
+  if(isFac()) h+=`<div class="railsec"><a class="stagelink ${cur==="fac"?"on":""}" href="#facilitator"><span class="dot">◆</span><span><span class="t">Facilitator pack</span><br><span class="p">Workshops and gate meetings</span></span></a></div>`;
   $("#rail").innerHTML=h;
 }
 
@@ -1225,6 +1262,52 @@ const W = {
 };
 
 /* ===================== RENDER: VIEWS ===================== */
+/* ===================== ROLE VIEW ===================== */
+const ROLEPICK=[
+ {id:"fac",t:"Facilitator / journey lead",d:"Sees the whole journey, every worksheet and the facilitator pack. Runs the workshops and gate meetings.",codes:[]},
+ {id:"lead",t:"Leadership & AI governance committee",d:"Sets policy and risk appetite, and takes the gate decisions.",codes:["EL","AGC"]},
+ {id:"PO",t:"Programme / business owner",d:"Owns the problem and the service, and answers for the AI system's outcomes.",codes:["PO"]},
+ {id:"TL",t:"AI / data technical lead (IT)",d:"Data, models, testing, hosting and monitoring.",codes:["TL"]},
+ {id:"LD",t:"Legal & data protection (DPO)",d:"Legal basis, DPIA, contract terms and people's rights.",codes:["LD"]},
+ {id:"PR",t:"Procurement & vendor management",d:"Tenders, vendor checks and contracts.",codes:["PR"]},
+ {id:"IA",t:"Internal audit & risk",d:"Independent assurance, risk reviews and audits.",codes:["IA"]}];
+const LVL={A:"Accountable",R:"Responsible",C:"Consulted",I:"Informed",P:"Takes part"};
+const LRANK={A:4,R:3,P:3,C:2,I:1,"":0};
+/* who leads each worksheet part, by stage and part number */
+const BLOCK_ROLES={1:{0:"*",1:"*"},2:{0:"*",1:["TL","PO","LD"],2:["PO","AGC","TL"],3:"*"},3:{0:["EL","AGC"],1:["AGC","EL","LD","IA"]},
+ 4:{0:["PO"],1:["PO","TL"],2:["PO","TL"],3:["PO","LD","AGC"]},5:{0:["PO","TL","LD","AGC"],1:["AGC","LD","IA"],2:["PO","TL"],3:["AGC","PO","TL","LD","IA"]},
+ 6:{0:["TL","LD"],1:["PR","LD","TL","PO"]},7:{0:["TL","PO"],1:["TL","LD"],2:["PO","TL","LD"],3:["TL","IA","PO"],4:["TL","PO"]},
+ 8:{0:["AGC","PO","LD","IA","TL"]},9:{0:["PO","LD"],1:["PO","TL","IA"],2:["PO","TL","AGC"],5:["PO","TL","LD","PR"],6:["AGC","PO"]}};
+let ROLE=(()=>{ try{ return localStorage.getItem("ajc_role")||""; }catch(e){ return ""; } })();
+function roleDef(){ return ROLEPICK.find(r=>r.id===ROLE)||null; }
+function isFac(){ return !ROLE||ROLE==="fac"; }
+function setRole(r){ ROLE=r; try{ localStorage.setItem("ajc_role",r); }catch(e){} }
+function raciCodeFor(id,codes){ const parts=RACI[id][1].split(" "); let best=""; codes.forEach(c=>{ const i=ROLES.findIndex(x=>x[0]===c); const v=(parts[i]||"").split("/"); v.forEach(x=>{ if(LRANK[x]>LRANK[best]) best=x; }); }); return best; }
+function roleInStage(st,codes){ if(st.id<=2) return {lvl:"P",acts:[]}; const acts=st.raci.map(id=>({id,what:RACI[id][0],c:raciCodeFor(id,codes)})).filter(a=>a.c&&a.c!=="–"); let lvl=""; acts.forEach(a=>{ if(LRANK[a.c]>LRANK[lvl]) lvl=a.c; }); return {lvl,acts}; }
+function myStage(st){ const r=roleDef(); if(isFac()) return null; return roleInStage(st,r.codes); }
+function blockMine(stid,i){ if(isFac()) return null; const m=(BLOCK_ROLES[stid]||{})[i]; if(!m) return false; if(m==="*") return true; return m.some(c=>roleDef().codes.includes(c)); }
+function blockLeads(stid,i){ const m=(BLOCK_ROLES[stid]||{})[i]; if(!m||m==="*") return ""; return m.slice(0,2).map(c=>{ const r=ROLEPICK.find(x=>x.codes.includes(c)); return r?r.t.split(" (")[0].split(" / ")[0]:c; }).filter((v,i,a)=>a.indexOf(v)===i).join(", "); }
+function lvlChip(l,short){ if(!l) return `<span class="rl rl-n">${short?"–":"Not involved"}</span>`; return `<span class="rl rl-${l}" title="${LVL[l]}">${short?(l==="P"?"✓":l):LVL[l]}</span>`; }
+function rolePicker(compact){ return `<div class="rolepick">${ROLEPICK.map(r=>`<button class="rolecard ${ROLE===r.id?"on":""} ${r.id==="fac"?"fac":""}" data-role="${r.id}"><b>${esc(r.t)}</b>${compact?"":`<span>${esc(r.d)}</span>`}</button>`).join("")}</div>`; }
+function roleHome(){
+  if(!ROLE) return `<section class="panel rolepanel"><h2 class="sec-title" style="margin-top:0">What is your role?</h2><p class="why" style="margin:0 0 12px">The journey adapts to you: you see the stages and worksheet parts you lead first. Facilitators see everything. You can change this at any time.</p>${rolePicker(false)}</section>`;
+  const r=roleDef();
+  if(isFac()) return `<section class="panel rolepanel"><div class="rolehead"><div><div class="eyebrow">Your role</div><h2>${esc(r.t)}</h2><p>You see the full journey, every worksheet and the facilitator pack. Each stage shows who to invite.</p></div><a class="btn small" href="#role">Change role</a></div><div class="btnrow" style="margin-top:6px"><a class="btn primary" href="#facilitator">Open the facilitator pack</a></div></section>`;
+  const rows=STAGES.map(st=>{ const m=roleInStage(st,r.codes); const main=m.acts.filter(a=>/A|R/.test(a.c)); return `<a class="mystage ${m.lvl&&m.lvl!=="I"?"":"dim"}" href="#stage-${st.id}"><span class="ms-n">${st.id}</span><span class="ms-t"><b>${esc(st.title)}</b>${main.length?`<small>${main.map(a=>esc(a.what)).join(" · ")}</small>`:st.id<=2?`<small>Everyone takes part in this institution stage</small>`:m.lvl?`<small>Colleagues lead; you are ${LVL[m.lvl].toLowerCase()}</small>`:`<small>Colleagues lead this stage</small>`}</span>${lvlChip(m.lvl)}</a>`; }).join("");
+  return `<section class="panel rolepanel"><div class="rolehead"><div><div class="eyebrow">Your role</div><h2>${esc(r.t)}</h2><p>${esc(r.d)} Below is where you come in, from the Playbook's RACI matrix.</p></div><a class="btn small" href="#role">Change role</a></div><div class="mystages">${rows}</div></section>`; }
+function renderRole(){ $("#main").innerHTML=`<section class="panel"><div class="eyebrow">Your role</div><h1 style="font-size:26px;margin:6px 0 8px">What is your role in the journey?</h1><p class="why">Choose the role closest to yours. You will see the stages and worksheet parts you lead first; everything else stays available. Facilitators see the whole journey and the facilitator pack. This choice is kept in this browser and does not change your answers.</p>${rolePicker(false)}</section>`; }
+function stageRoleBox(st){
+  if(isFac()){ const inv={}; st.raci.forEach(id=>{ const parts=RACI[id][1].split(" "); ROLES.forEach((r,i)=>{ const v=(parts[i]||"").split("/")[0]; if(/A|R|C/.test(v)&&LRANK[v]>LRANK[inv[r[1]]||""]) inv[r[1]]=v; }); });
+    const list=Object.entries(inv).sort((a,b)=>LRANK[b[1]]-LRANK[a[1]]);
+    const ses=(typeof SESSIONS!=="undefined"?SESSIONS:[]).filter(x=>x.stage===st.id);
+    return `<div class="rolebox fac"><b>Facilitator · who to invite</b>${list.length?`<div class="invite">${list.map(([n,l])=>`<span>${lvlChip(l,true)} ${esc(n)}</span>`).join("")}</div>`:`<p>Everyone who will be involved in AI: programme, IT/MIS, legal and data protection, and frontline staff.</p>`}${ses.length?`<p style="margin:8px 0 0">Run it as a workshop: ${ses.map(x=>`<a href="#facilitator">Session ${esc(x.id)} · ${esc(x.title)}</a> (${esc(x.dur)})`).join(" · ")}</p>`:""}</div>`; }
+  const m=myStage(st); const r=roleDef();
+  if(st.id<=2) return `<div class="rolebox"><b>Your role here (${esc(r.t)}):</b> everyone takes part in this institution stage. Bring what you know about your area.</div>`;
+  if(!m.lvl||m.lvl==="I") return `<div class="rolebox dim"><b>Your role here (${esc(r.t)}):</b> colleagues lead this stage${m.lvl?"; you are kept informed":""}. Read it to know what is decided and why.</div>`;
+  const by=k=>m.acts.filter(a=>a.c.split("/").includes(k)||a.c===k);
+  const line=(k,l)=>{ const a=m.acts.filter(x=>x.c.split("/").includes(k)); return a.length?`<li>${lvlChip(k,true)} <b>${l}</b> ${a.map(x=>esc(x.what)).join("; ")}</li>`:""; };
+  return `<div class="rolebox"><b>Your role here (${esc(r.t)})</b><ul>${line("A","Accountable for:")}${line("R","Responsible for:")}${line("C","Consulted on:")}</ul></div>`; }
+
 /* Plain-language guidance per stage (adapted from the AI Journey Guide) */
 const GUIDE={"1": {"read": "Taxonomy §1 and its Conclusion", "do": "Bring programme, IT, legal and frontline staff together to agree what counts as AI and to list delivery problems, not solutions.", "light": "Done once per institution. Revisit when leadership or the legal framework changes.", "steps": [["Bring the core teams together and name a journey lead", "Programme, IT/MIS, legal and data protection, and frontline staff learn the same vocabulary. Record roles rather than individuals, so the journey survives staff changes."], ["Agree what you mean by ‘AI’", "Separate AI (systems that learn from data) from fixed-rule automation. Distinguish analytical from generative tasks, and recognise agentic set-ups that take actions."], ["Learn from what others have done", "Browse the AI Hub Tracker and the Global Evidence Review for cases close to your programmes and country. Note why things went right or wrong: usually governance rather than technique."], ["List problems, not solutions", "Write down delivery-chain problems where AI might help (registration, eligibility, payments, grievances, communication) without choosing any technology yet."]]}, "2": {"read": "Data Readiness Checklist and the AI Readiness Self-Assessment", "do": "Score your data with the 17-question checklist and look honestly at institutional readiness, then decide how to proceed.", "light": "Done once per institution. Revisit when leadership, the legal framework or the data landscape changes.", "steps": [["Check your data", "17 questions across Management, Quality, Access and Security. They show whether your data can support AI at all, and where quality must improve first."], ["Take an honest look at institutional readiness", "Review the readiness areas against documents, not impressions. In a workshop, the 15-minute Governance & Readiness Walk makes the picture visible to the whole group."], ["Name the gaps and decide how to proceed", "Separate gaps that block any AI use from those that can be closed alongside a small pilot. Proceed, proceed alongside fixes, or strengthen foundations first: choosing to wait is a legitimate result."]]}, "3": {"read": "Playbook §5.2 and Annex I (RACI)", "do": "Assign the five governance functions to named posts, decide who approves at which risk tier, and open the AI Register.", "light": "Small institutions can combine roles in one post, but those who build or buy a system must never approve or assure it alone.", "steps": [["Assign the five governance functions", "Institutional accountability, use-case ownership, governance coordination, independent assurance, and approval and oversight. Map each to a named post with a deputy."], ["Adapt the RACI matrix", "Check that every activity has exactly one Accountable role, and that those who build or buy a system do not alone approve or assure it."], ["Write down policy, risk appetite and escalation", "Set the AI policy and risk appetite, set up the governance committee with clear decision rights, and give any staff member a route to raise a concern."], ["Link risk tiers to approval paths", "High-impact use cases go to executive approval; lower-risk ones to the committee. This is where you decide how much review each tier needs."], ["Open the AI Register", "One row per AI system, with purpose, owner, risk tier and status. Start with the Core fields and decide what you will publish."], ["Reflect local law and set a review date", "Include administrative law, data protection and sector rules, and review the matrix at least once a year."]]}, "4": {"read": "Playbook §4.3.1 Purpose and value", "do": "Write a one-page problem statement with a baseline and a comparison with non-AI options, run the Tool 1 pre-screening, and take it to Gate 1.", "light": "For Low-criticality uses (internal efficiency, general information with no personal data), the Gate 1 file can be a short note to the committee.", "steps": [["Write the problem statement", "Name the affected service, who experiences the problem and why it matters. A proposal that starts with a technology is not ready."], ["Set a baseline", "Measure today's performance (waiting times, correct answers, exclusion errors) so later reviews can test whether the improvement happened."], ["Compare with non-AI options", "Better forms, data exchange, more staff, or rule-based systems. Explain why they are not enough."], ["Classify the use case", "AI capability, use case category, social protection function and decision criticality, which sets the level of human oversight required."], ["Look for comparable cases", "See which similar systems are in the AI Hub Tracker and what went wrong for them, including any that were suspended."], ["Run the pre-assessment screening", "Proportionality, do no harm and accountability questions. If a fundamental red line is crossed (e.g. social scoring, mass surveillance), stop."], ["Consult affected people", "Talk to communities or their representatives before the design is fixed."], ["Take the proposal to Gate 1", "The committee can authorise design, ask for revision, or decline."]]}, "5": {"read": "Tool 1 Intrinsic Risk Worksheet and Tool 2 Context Diagnostic", "do": "Rate intrinsic risk (Tool 1) and context (Tool 2), combine them into an overall tier, and record every risk with an owner in the Risk Register (Tool 3).", "light": "Tool 2 describes the institution, so a recent assessment can usually be reused and checked rather than redone. Tool 1 is always specific to the system.", "steps": [["Map where risk can arise", "Across the lifecycle and the five sources of risk: data, model, operations and integration, governance and oversight, market and sovereignty."], ["Rate the intrinsic risk with Tool 1", "Likelihood, severity and scale, each Low, Medium or High, with evidence. Where evidence is weak, lean higher."], ["Rate the context with Tool 2", "Legal framework, institutional capacity, data ecosystem and public trust. A weak context raises the tier one level; a strong one lowers it."], ["Check what went wrong elsewhere", "Compare with the risks and harms recorded for similar cases in the Tracker."], ["Record every risk in the Risk Register (Tool 3)", "Rights affected, owner, mitigation, deadline, evidence, and whether it is Blocking, a Pilot Condition or to Monitor."], ["Plan to repeat it", "Reassess at inception, before piloting, before scale-up and after any major update."]]}, "6": {"read": "Sovereignty report §7.4 and Annex 2, and the Procurement Toolkit", "do": "Place the use case in a sovereignty quadrant, choose the contract clauses for its risk tier, and put the ten vendor questions into the tender.", "light": "Uses outside the high-risk list (no eligibility, targeting, benefits, sanctions or fraud flags) follow the lighter ‘other uses’ column of the clause table.", "steps": [["Place the use case in the sovereignty quadrant", "Data sensitivity × compute need gives quadrant I to IV, and with it a hosting and control posture."], ["Choose the development route", "In-house, co-developed or third-party. Each carries different accountability, lock-in and capacity risks."], ["Classify what you are buying", "Bespoke system, AI-enabled service, hosted model service, or an AI feature switched on in an existing contract."], ["Decide data location and pick the clauses", "Choose clauses at the tier your risk level needs, then merge them into one Sovereignty Schedule with one order of precedence and one 24-hour incident clock."], ["Put the vendor checklist into the tender", "Ask the ten vendor questions and score the answers."], ["Confirm the legal basis and complete the DPIA", "Legal & Data Protection is accountable for this."], ["Run the ‘before you sign’ checks", "Carve location, no-training and access-request breaches out of the liability cap, and have a qualified lawyer in your country review the contract."]]}, "7": {"read": "Playbook §6 controls by type of AI, and the Model Card template", "do": "Design oversight, access and explanation, test with frontline staff and across population groups, and complete the model card.", "light": "On the light path some deeper worksheets are hidden. The 19 safeguards in Stage 8 still apply.", "steps": [["Apply the controls for your type of AI", "Predictive, generative and agentic systems need different safeguards."], ["Set up data governance, access and explanation", "A non-digital channel with no penalty for using it; what must be explained, to whom and in which languages; and how people can challenge a decision."], ["Design human oversight and plan for failure", "Where people review or override, with the time, training and authority to do so. Keep a fallback process if the AI is unavailable or unreliable."], ["Test under real conditions", "Local data, results broken down by group, red-teaming for high-risk systems, and acceptance testing with frontline staff and affected people."], ["Document the system in a model card", "Purpose, out-of-scope uses, data, metrics by group, limitations, oversight and monitoring triggers. A card with open placeholders is not ready for approval."]]}, "8": {"read": "Tool 4 Go / Pilot / No-Go Checklist", "do": "Update the risk assessment with the test evidence, go through the 19 safeguards, and record the Gate 2 decision.", "light": "No shortcut here: all 19 safeguards apply whatever the risk tier.", "steps": [["Update the risk assessment", "Bring Tools 1–3 up to date with the test evidence. All Blocking risks must be resolved."], ["Complete Tool 4", "Go through the 19 minimum safeguards. Low with all safeguards points to Go, Medium to Pilot, High or anything missing to No-Go."], ["If piloting, bound it", "Limited scope and duration, a named person reviewing every AI output, stop conditions, and an opt-out to a fully human process."], ["Sign off and record the Gate 2 decision", "Signed by the programme manager, data protection officer and oversight or audit. Approval to pilot is not permission to expand."]]}, "9": {"read": "Playbook §4.3.4 Continuation and change", "do": "Review performance and outcomes monthly during a pilot, keep the AI Register entry current, and send any material change back through Stage 5 before it goes live.", "light": "After full deployment, risk reviews can move from monthly to quarterly, with an annual independent audit.", "steps": [["Prepare for go-live", "Train staff on limits, automation bias and when to override. Tell people AI is used and how to seek review. Agree who can suspend or roll back."], ["Monitor how the system behaves", "Performance, drift, and error rates across groups, plus administrative burden: documents requested, delays, overrides and appeals."], ["Run complaints and appeals with human review", "Explain decisions on request, correct errors and restore entitlements."], ["Watch for reassessment triggers", "New data, retraining, new populations, new permissions, or changes in law or vendor terms send the system back to risk assessment before the change goes live."], ["Hold Gates 3 and 4", "Gate 3 decides on deployment or expansion; Gate 4 on continued use and material change."], ["Keep the register current and plan retirement", "Update the AI Register entry and its gate log. Plan the exit: reverting to a non-AI process, data deletion and knowledge transfer."]]}};
 let curTab="read"; const OPENF={};
@@ -1237,12 +1320,16 @@ function topBar(id){ const ex=S.isExample?`<span class="sb-item sb-ex"><b>Worked
   return `<div class="statusbar">${ex}${sysBar(id)}</div>`; }
 function foldWrap(key,title,meta,html,open){ const o=OPENF[key]!==undefined?OPENF[key]:open; return `<details class="wfold" data-fold="${key}" ${o?"open":""}><summary><span class="wt">${title}</span>${meta?`<span class="wm">${meta}</span>`:""}<span class="chev" aria-hidden="true"></span></summary><div class="wbody">${html}</div></details>`; }
 function blockFill(b){ if(!b.fields) return null; const f=b.fields.filter(x=>!(x.full&&isLight())); if(!f.length) return null; const a=A(); const n=f.filter(x=>{ const v=a[x.k]; return v!==undefined&&v!==""&&v!==false&&!(Array.isArray(v)&&!v.length); }).length; return [n,f.length]; }
-function worksheet(st){ let firstOpen=false;
-  return st.work.map((b,i)=>{ const html=b.fields?fieldset(b):W[b.widget](b); if(!html) return "";
-    if(b.widget==="gate") return html;
+function worksheet(st){ let firstOpen=false; const mineList=[], others=[];
+  st.work.forEach((b,i)=>{ const html=b.fields?fieldset(b):W[b.widget](b); if(!html) return;
+    if(b.widget==="gate"){ mineList.push(html); return; }
     const m=html.match(/<legend[^>]*>([\s\S]*?)<\/legend>/); const title=m?m[1]:"Worksheet"; const body=m?html.replace(m[0],""):html;
-    const fc=blockFill(b); const done=fc&&fc[0]===fc[1]; const open=!firstOpen&&!done; if(open) firstOpen=true;
-    return foldWrap("w"+st.id+"_"+i,`<span class="wn">${i+1}</span>${title}`,fc?`<span class="chip ${done?"good":fc[0]?"info":"none"}">${fc[0]} of ${fc[1]} filled</span>`:"",body,open); }).join(""); }
+    const mine=blockMine(st.id,i); const fc=blockFill(b); const done=fc&&fc[0]===fc[1]; const open=mine!==false&&!firstOpen&&!done; if(open) firstOpen=true;
+    const tag=mine===true?`<span class="chip yours">Your part</span>`:mine===false?`<span class="wl">Led by ${esc(blockLeads(st.id,i))}</span>`:"";
+    const f=foldWrap("w"+st.id+"_"+i,`<span class="wn">${i+1}</span>${title}`,tag+(fc?` <span class="chip ${done?"good":fc[0]?"info":"none"}">${fc[0]} of ${fc[1]} filled</span>`:""),body,open);
+    (mine===false?others:mineList).push(f); });
+  if(isFac()||!others.length) return mineList.join("")+others.join("");
+  return (mineList.length?mineList.join(""):`<div class="rolebox dim">No worksheet part in this stage is led by your role. Colleagues fill it in; you can still read or add to it below.</div>`)+`<details class="wfold othergrp" data-fold="og${st.id}" ${OPENF["og"+st.id]?"open":""}><summary><span class="wt">Parts led by colleagues</span><span class="wm"><span class="chip none">${others.length}</span></span><span class="chev" aria-hidden="true"></span></summary><div class="wbody">${others.join("")}</div></details>`; }
 function quizHTML(st){ return st.quiz.map((q,i)=>{ const key=st.id+"_"+i, ans=S.quiz[key]; return `<div class="q"><div class="qt">${i+1}. ${esc(q.q)}</div>${q.o.map((o,j)=>{ const cls=ans===undefined?"":(j===q.a?"right":(j===ans?"wrong":"")); return `<label class="opt ${cls}" for="q_${key}_${j}"><input type="radio" name="q_${key}" id="q_${key}_${j}" data-quiz="${key}" value="${j}" ${ans===j?"checked":""}><span>${esc(o)}</span></label>`; }).join("")}${ans!==undefined?`<div class="explain"><b>${ans===q.a?"Correct.":"Not quite."}</b> ${esc(q.e)}<span class="ref">Source: ${esc(q.ref)}</span></div>`:""}</div>`; }).join(""); }
 function renderStage(id){
   const st=STAGES.find(s=>s.id===id); const p=progress(st); const g=GUIDE[id];
@@ -1253,6 +1340,7 @@ function renderStage(id){
   <div class="tabs" role="tablist">${[["read","1 · What to do"],["do","2 · Worksheet"]].map(t=>`<button role="tab" aria-selected="${curTab===t[0]}" class="${curTab===t[0]?"on":""}" data-tab="${t[0]}">${t[1]}</button>`).join("")}</div></section>`;
   h+=`<section class="panel">`;
   if(curTab==="read"){
+    h+=stageRoleBox(st);
     h+=`<div class="inshort"><div class="is-h">In short</div><div class="is-grid"><div><b>Read</b><span>${esc(g.read)}</span></div><div><b>Do</b><span>${esc(g.do)}</span></div><div><b>Lighter route</b><span>${esc(g.light)}</span></div></div></div>`;
     h+=`<h2 class="sec-title">Be aware of</h2><ul class="aware">${st.concepts.map(c=>`<li><b>${esc(c[0])}.</b> ${esc(c[1])}</li>`).join("")}</ul>`;
     h+=`<h2 class="sec-title">What to do</h2><ol class="gsteps">${g.steps.map(s=>`<li><b>${esc(s[0])}</b><span>${esc(s[1])}</span></li>`).join("")}</ol>`;
@@ -1680,7 +1768,8 @@ function renderStart(){
   let h=S.isExample?exampleBanner():"";
   h+=`<section class="panel hero" style="padding:34px 36px">${kvSVG(11,420,320)}<div class="eyebrow">DCI AI Hub · AI Journey Companion</div><h1 class="hero-title">From idea to <em>accountable AI</em></h1><p class="why" style="max-width:60ch">Nine stages that guide a social protection institution from first idea to a monitored AI system. Each stage tells you what to do, what to be aware of, and when you are ready to move on.</p><div class="howsteps"><div><b>Stages 1–3</b><span>Once for the institution</span></div><div><b>Stages 4–9</b><span>For each AI system, after a short triage</span></div><div><b>Gates 1–4</b><span>No system moves on without an accountable decision</span></div></div>
   <div class="btnrow"><button class="btn primary" id="newjourney">${S.isExample||S.systems.length||Object.keys(S.inst).length?"Start a new journey":"Start our journey"}</button><button class="btn" data-loadex="chatbot" title="${esc(EXCHOICES[0].d)}">Example: AI chatbot</button><button class="btn" data-loadex="jobs" title="${esc(EXCHOICES[1].d)}">Example: Job matching</button></div><p style="font-size:13px;color:#BFD9FF;margin:10px 0 0">${S.isExample?`Now showing the <b>${S.exampleId==="jobs"?"job matching":"AI chatbot"}</b> example.`:"The examples are complete fictional journeys with every document filled."} Also: <a href="#documents">Documents</a> · <a href="#facilitator">Facilitator pack</a> · <a href="#systems">Our AI systems (${S.systems.length})</a></p></section>`;
-  h+=`<section class="panel"><h2 class="sec-title">The journey</h2><div class="journeymap">${STAGES.map(st=>`<a class="jcard ${st.id<=3?"inst":""}" href="#stage-${st.id}"><span class="jhead">${icon(st.id)}<span class="num">STAGE ${st.id} · ${st.id<=3?"INSTITUTION":"PER SYSTEM"}<br>${progress(st)}% done</span></span><b>${esc(st.title)}</b><span>${esc(st.question)}</span>${st.gate?`<span class="chip gate gate">◆ ${esc(st.gate.split(" · ")[0])}</span>`:""}</a>`).join("")}</div>
+  h+=roleHome();
+  h+=`<section class="panel"><h2 class="sec-title">The journey</h2><div class="journeymap">${STAGES.map(st=>`<a class="jcard ${st.id<=3?"inst":""} ${(()=>{const m=myStage(st); return m&&(!m.lvl||m.lvl==="I")?"rdim":"";})()}" href="#stage-${st.id}">${(()=>{const m=myStage(st); return m?`<span class="jrole">${lvlChip(m.lvl)}</span>`:"";})()}<span class="jhead">${icon(st.id)}<span class="num">STAGE ${st.id} · ${st.id<=3?"INSTITUTION":"PER SYSTEM"}<br>${progress(st)}% done</span></span><b>${esc(st.title)}</b><span>${esc(st.question)}</span>${st.gate?`<span class="chip gate gate">◆ ${esc(st.gate.split(" · ")[0])}</span>`:""}</a>`).join("")}</div>
   <details class="wfold" style="margin-top:22px"><summary><span class="wt">How the AI Hub tools fit together</span><span class="chev" aria-hidden="true"></span></summary><div class="wbody"><div class="cols">
   <div class="reading"><span class="src">Learn</span><p>Taxonomy and Evidence Review build a shared language and show what has worked and failed (Stage 1).</p></div>
   <div class="reading"><span class="src">Get ready</span><p>Readiness Walk, Data Readiness Checklist and the Playbook's roles and RACI (Stages 2–3).</p></div>
@@ -1780,8 +1869,10 @@ function route(){ const h=(location.hash||"#start").slice(1); let m;
   else if(h==="walk-present"){ renderRail("fac"); renderPresent(); $("#nav-facilitator").classList.add("on"); }
   else if(h==="walk-room"){ renderRail("fac"); renderRoom(); $("#nav-facilitator").classList.add("on"); }
   else if(h==="library"){ renderRail(0); renderLibrary(); $("#nav-library").classList.add("on"); }
+  else if(h==="role"){ renderRail(0); renderRole(); }
   else if(h==="dossier"){ renderRail(0); renderDossier(); $("#nav-dossier").classList.add("on"); }
   else { renderRail(0); renderStart(); $("#nav-start").classList.add("on"); }
+  $("#nav-facilitator").style.display=isFac()?"":"none";
   const nm=$("#navmore"); if(nm){ nm.open=NAVSMALL.matches; $("#nav-more").classList.toggle("on",!!nm.querySelector("a.on")); } }
 const NAVSMALL=window.matchMedia("(max-width:860px)");
 NAVSMALL.addEventListener("change",()=>{ const nm=$("#navmore"); if(nm) nm.open=NAVSMALL.matches; });
@@ -1806,6 +1897,7 @@ document.addEventListener("change",e=>{ const el=e.target;
   if(el.id==="importfile"&&el.files[0]){ const r=new FileReader(); r.onload=()=>{ try{ let o=JSON.parse(r.result); if(!o.a&&!o.v) throw 0; o=fix(o); o.isExample=false; S=o; save(); route(); toast("Journey loaded"); }catch(x){ toast("That file is not a journey file from this tool"); } }; r.readAsText(el.files[0]); el.value=""; }
   if(el.tagName==="INPUT"&&(el.type==="text"||el.type==="date")&&el.dataset.k) rerenderKeepFocus();
 });
+document.addEventListener("click",e=>{ const rb=e.target.closest("[data-role]"); if(rb){ setRole(rb.dataset.role); toast("Role set: "+roleDef().t); if(location.hash==="#role") location.hash="#start"; else { route(); } return; } });
 document.addEventListener("click",e=>{ const t=e.target.closest("button,[data-tab],a[data-opensys]"); if(!t) return;
   if(t.dataset.tab){ curTab=t.dataset.tab; route(); window.scrollTo(0,0); return; }
   if(t.dataset.delgate!==undefined){ const gi=+t.dataset.delgate; confirmBox("Delete this gate decision record?","Delete",()=>{ A().gates.splice(gi,1); save(); rerenderKeepFocus(); toast("Gate decision deleted"); }); return; }
