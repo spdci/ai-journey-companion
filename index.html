@@ -565,8 +565,8 @@ const STAGES = [
      {k:"team", l:"Core team (roles)", t:"textarea", h:"e.g. programme manager, MIS lead, DPO, grievance specialist"}
    ]},
    {legend:"Reflection", fields:[
-     {k:"s1_cases", l:"Which cases from the Evidence Review are closest to what we are considering, and what went right or wrong there?", t:"textarea", h:"Drafted automatically from the AI Hub Tracker, using the use case of your AI systems or, before you add one, the problems you list below. It stops updating once you edit it; clear it to draft again."},
-     {k:"s1_ideas", l:"Which problems in our delivery chain might AI help with? List them without choosing yet.", t:"textarea"}
+     {k:"s1_ideas", l:"Which problems in our delivery chain might AI help with? List them without choosing yet.", t:"textarea", h:"e.g. grievances are sorted by hand; long call-centre queues; duplicate records across registries"},
+     {k:"s1_cases", l:"Which cases from the Evidence Review are closest to these problems, and what went right or wrong there?", t:"textarea", h:"Drafted from the AI Hub Tracker once you list problems above (or add an AI system with a use case). It stops updating once you edit it; clear it to draft again.", ph:"List at least one problem above and the closest cases will appear here."}
    ]}
   ],
   outputs:["Shared vocabulary across programme, IT and legal teams","A long list of candidate problems (not solutions)"], raci:[] },
@@ -1151,7 +1151,7 @@ function fieldHTML(f){
   const v=A()[f.k]; const id="f_"+f.k; let inp="";
   if(f.t==="text") inp=`<input type="text" id="${id}" data-k="${f.k}" value="${esc(v)}">`;
   else if(f.t==="date") inp=`<input type="date" id="${id}" data-k="${f.k}" value="${esc(v)}">`;
-  else if(f.t==="textarea") inp=`<textarea id="${id}" data-k="${f.k}">${esc(v)}</textarea>`;
+  else if(f.t==="textarea") inp=`<textarea id="${id}" data-k="${f.k}"${f.ph?` placeholder="${esc(f.ph)}"`:""}>${esc(v)}</textarea>`;
   else if(f.t==="select") inp=`<select id="${id}" data-k="${f.k}"><option value="">Choose…</option>${opts(f).map(o=>`<option ${o===v?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
   else if(f.t==="radio") inp=`<div class="seg" role="radiogroup" aria-labelledby="${id}_l">${opts(f).map((o,i)=>`<label><input type="radio" name="${id}" id="${id}_${i}" data-k="${f.k}" value="${esc(o)}" ${o===v?"checked":""}>${esc(o)}</label>`).join("")}</div>`;
   else if(f.t==="check") return `<label class="checkrow" for="${id}"><input type="checkbox" id="${id}" data-k="${f.k}" ${v?"checked":""}><span>${esc(f.l)}</span></label>`;
@@ -1378,7 +1378,7 @@ function simScore(a,c){ let s=0,poss=0; const why=[];
   return {c, pct: poss?Math.round(s/poss*100):0, why, poss}; }
 function similarCases(n){ const a=A(); if(!a.usecase&&!a.capability) return []; return TRACKER.map(c=>simScore(a,c)).filter(r=>r.pct>=35).sort((x,y)=>y.pct-x.pct||(y.c.ns-x.c.ns)).slice(0,n||8); }
 /* Stage 1 reflection: draft from the use case */
-const S1_STOP=new Set("with that this from their they have will about which what where when into using used more less than also such other some need needs could would should there these those very much many make made like just only over each most data system systems programme programmes social protection people help better them does done".split(" "));
+const S1_STOP=new Set("with that this from their they have will about which what where when into using used more less than also such other some need needs could would should there these those very much many make made like just only over each most data system systems programme programmes social protection people help better them does done want hand late long slow fast same lots often take takes time times high many".split(" "));
 function s1Tokens(t){ return [...new Set((String(t||"").toLowerCase().match(/[a-z]{4,}/g)||[]).filter(w=>!S1_STOP.has(w)).map(w=>w.length>5?w.slice(0,w.length-2):w))]; }
 function s1Source(){
   const ucs=S.systems.filter(s=>s.a&&(s.a.usecase||s.a.capability));
@@ -1386,9 +1386,9 @@ function s1Source(){
     ucs.forEach(s=>withSys(s.id,()=>similarCases(5)).forEach(r=>{ const p=seen.get(r.c.id); if(!p||p.pct<r.pct) seen.set(r.c.id,r); }));
     const list=[...seen.values()].sort((x,y)=>y.pct-x.pct||y.c.ns-x.c.ns).slice(0,5);
     return list.length?{basis:"your use case: "+ucs.map(s=>[s.a.usecase,s.a.capability].filter(Boolean).join(", ")+(s.a.sys?` (${s.a.sys})`:"")).join("; "),list}:null; }
-  const tk=s1Tokens([S.inst.s1_ideas,S.inst.inst_progs].filter(Boolean).join(" ")); if(!tk.length) return null;
-  const need=Math.min(3,tk.length*2);
-  const list=TRACKER.map(c=>{ const key=[c.n,c.prog,c.uc,(c.uc2||[]).join(" "),c.fn,c.cap,(c.cap2||[]).join(" "),c.pil].join(" ").toLowerCase(), more=String(c.d||"").toLowerCase(); return {c,hits:tk.reduce((s,w)=>s+(key.includes(w)?2:more.includes(w)?1:0),0)}; })
+  const tk=s1Tokens(S.inst.s1_ideas); if(!tk.length) return null;
+  const need=2; const rx=tk.map(w=>new RegExp("\\b"+w));
+  const list=TRACKER.map(c=>{ const nm=[c.n,c.prog].join(" ").toLowerCase(), key=[c.uc,(c.uc2||[]).join(" "),c.fn,c.cap,(c.cap2||[]).join(" "),c.pil].join(" ").toLowerCase(), more=String(c.d||"").toLowerCase(); return {c,hits:rx.reduce((s,r)=>s+(r.test(nm)?4:r.test(key)?3:r.test(more)?1:0),0)}; })
     .filter(r=>r.hits>=need).sort((x,y)=>y.hits-x.hits||y.c.ns-x.c.ns).slice(0,5);
   return list.length?{basis:"the problems you listed",list}:null; }
 function s1First(t){ t=String(t||"").trim(); const cut=/…$/.test(t); t=t.replace(/…$/,"").trim(); if(!t) return ""; const m=t.match(/^.{20,220}?[.;](\s|$)/); return m?m[0].trim():(t.length>200?t.slice(0,200)+"…":t+(cut?"…":"")); }
@@ -1907,7 +1907,7 @@ document.addEventListener("input",e=>{ const el=e.target;
   if(el.dataset.r!==undefined){ A().risks[+el.dataset.r][el.dataset.f]=el.value; save(); if(el.tagName==="SELECT") rerenderKeepFocus(); return; }
   const k=el.dataset.k; if(!k) return;
   if(el.type==="checkbox") A()[k]=el.checked; else A()[k]=el.value;
-  save(); if(k==="s1_ideas"||k==="inst_progs"){ if(syncS1Cases()){ const ta=document.getElementById("f_s1_cases"); if(ta) ta.value=S.inst.s1_cases||""; } } if(!(LIVE.has(el.type)||el.tagName==="TEXTAREA")) rerenderKeepFocus(); else renderRail(+((location.hash.match(/stage-(\d)/)||[])[1]||0));
+  save(); if(k==="s1_ideas"){ if(syncS1Cases()){ const ta=document.getElementById("f_s1_cases"); if(ta) ta.value=S.inst.s1_cases||""; } } if(!(LIVE.has(el.type)||el.tagName==="TEXTAREA")) rerenderKeepFocus(); else renderRail(+((location.hash.match(/stage-(\d)/)||[])[1]||0));
 });
 document.addEventListener("input",e=>{ const el=e.target;
   if(el.dataset.tri){ const id=(location.hash.match(/^#triage-([a-z0-9]+)$/)||[])[1]; const s=id?S.systems.find(x=>x.id===id):null; const a=s?s.a:triDraft; const k=el.dataset.tri; a[k]= el.type==="checkbox"?(k==="path_choice"?(el.checked?"full":""):el.checked):el.value; if(s) save(); if(el.type!=="text"){ const y=window.scrollY; renderTriage(id||null); renderRail(0); window.scrollTo(0,y); } else { const b=$("#createsys"); const t=triage(a); if(b) b.disabled=!(t.done&&a.sys); } return; }
